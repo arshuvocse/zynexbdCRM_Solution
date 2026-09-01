@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App & General Branding -->
+    <string name="app_name">দেশি সিআরএম</string>
+    <string name="brand_subtitle">পাওয়ার্ড বাই জাইনেক্স</string>
+    <string name="app_tagline">বাংলাদেশের নিজস্ব স্মার্ট এন্টারপ্রাইজ সিআরএম</string>
+    <string name="greeting_salam">আসসালামু আলাইকুম</string>
+    <string name="welcome_to_your">স্বাগতম আপনার</string>
+    <string name="digital_workspace">ডিজিটাল ওয়ার্কস্পেসে</string>
+
+    <!-- General Common Actions -->
+    <string name="action_save">সংরক্ষণ করুন</string>
+    <string name="action_cancel">বাতিল</string>
+    <string name="action_confirm">নিশ্চিত করুন</string>
+    <string name="action_delete">মুছুন</string>
+    <string name="action_edit">সম্পাদনা</string>
+    <string name="action_filter">ফিল্টার</string>
+    <string name="action_apply">প্রয়োগ করুন</string>
+    <string name="action_reset">রিসেট</string>
+    <string name="action_close">বন্ধ করুন</string>
+    <string name="action_back">পেছনে</string>
+    <string name="action_submit">সাবমিট করুন</string>
+    <string name="action_next">পরবর্তী</string>
+    <string name="action_skip">স্কিপ করুন</string>
+    <string name="action_finish">সম্পন্ন</string>
+    <string name="action_get_started">শুরু করুন</string>
+    <string name="action_view_all">সব দেখুন</string>
+    <string name="action_view_details">বিস্তারিত দেখুন</string>
+    <string name="action_refresh">রিফ্রেশ</string>
+    <string name="action_export_excel">এক্সেল এক্সপোর্ট</string>
+    <string name="action_export_pdf">পিডিএফ এক্সপোর্ট</string>
+    <string name="action_select_language">ভাষা</string>
+    <string name="action_crop_image">ছবি ক্রপ করুন</string>
+    <string name="action_capture_photo">ছবি তুলুন</string>
+
+    <!-- Status & Connectivity -->
+    <string name="status_online">অনলাইন</string>
+    <string name="status_offline">অফলাইন</string>
+    <string name="status_gps_on">জিপিএস: চালু</string>
+    <string name="status_gps_off">জিপিএস: বন্ধ</string>
+    <string name="status_active">সক্রিয়</string>
+    <string name="status_inactive">নিষ্ক্রিয়</string>
+    <string name="status_loading">লোড হচ্ছে...</string>
+    <string name="status_network_online">ইন্টারনেট সংযোগ চালু হয়েছে • ব্যাক অনলাইন</string>
+    <string name="status_network_offline">ইন্টারনেট সংযোগ নেই • অফলাইন মোড</string>
+
+    <!-- Authentication / Login -->
+    <string name="login_title">লগইন</string>
+    <string name="login_subtitle">আপনার নির্ধারিত অ্যাকাউন্টে লগইন করুন</string>
+    <string name="login_username_hint">ইউজারনেম / আইডি</string>
+    <string name="login_password_hint">পাসওয়ার্ড</string>
+    <string name="login_button">লগইন করুন</string>
+    <string name="login_signing_in">লগইন হচ্ছে...</string>
+    <string name="login_error_invalid">ইউজারনেম বা পাসওয়ার্ড সঠিক নয়।</string>
+    <string name="login_error_server">সারভারে কানেক্ট করা যাচ্ছে না। নেটওয়ার্ক চেক করুন।</string>
+    <string name="login_forgot_password">পাসওয়ার্ড ভুলে গেছেন?</string>
+    <string name="login_role_user">ফিল্ড অফিসার</string>
+    <string name="login_role_admin">এক্সিকিউটিভ অ্যাডমিন</string>
+
+    <!-- Logout -->
+    <string name="logout_title">লগআউট নিশ্চিত করুন</string>
+    <string name="logout_message">আপনি কি নিশ্চিতভাবে আপনার অ্যাকাউন্ট থেকে লগআউট করতে চান?</string>
+    <string name="logout_confirm">হ্যাঁ, লগআউট</string>
+    <string name="logout_cancel">বাতিল</string>
+
+    <!-- Duty Punch Actions -->
+    <string name="duty_in">ডিউটি ইন</string>
+    <string name="duty_out">ডিউটি আউট</string>
+    <string name="duty_in_completed">✓ ইন (%s)</string>
+    <string name="duty_out_completed">✓ আউট (%s)</string>
+    <string name="duty_already_in">আজকের ডিউটি ইন সম্পন্ন হয়েছে।</string>
+    <string name="duty_already_out">আজকের ডিউটি আউট সম্পন্ন হয়েছে।</string>
+    <string name="duty_in_first_prompt">প্রথমে ডিউটি ইন সম্পন্ন করুন।</string>
+    <string name="punch_in_preview_title">ডিউটি ইন নিশ্চিত করুন</string>
+    <string name="punch_out_preview_title">ডিউটি আউট নিশ্চিত করুন</string>
+    <string name="punch_selfie_instruction">উপস্থিতি নিশ্চিত করতে একটি পরিষ্কার সেলফি তুলুন</string>
+    <string name="punch_recording">উপস্থিতি জমা হচ্ছে...</string>
+    <string name="punch_success_in">ডিউটি ইন সফলভাবে সম্পন্ন হয়েছে!</string>
+    <string name="punch_success_out">ডিউটি আউট সফলভাবে সম্পন্ন হয়েছে!</string>
+
+    <!-- User Home Cards & Sections -->
+    <string name="home_guide_btn">📖 গাইড</string>
+    <string name="home_card_customers_title">গ্রাহক তালিকা</string>
+    <string name="home_card_customers_sub">দোকান ও যোগাযোগ পরিচালনা</string>
+    <string name="home_card_visit_title">কাস্টমার ভিজিট রেকর্ড</string>
+    <string name="home_card_visit_sub">দোকান ভিজিট ও লাইভ ছবি জমা</string>
+    <string name="home_card_followups_title">পেমেন্ট ও ফলো-আপ</string>
+    <string name="home_card_followups_sub">বকেয়া কালেকশন ও করণীয়</string>
+    <string name="home_card_history_title">উপস্থিতির ইতিহাস</string>
+    <string name="home_card_history_sub">পূর্ববর্তী হাজিরা ও রিপোর্ট</string>
+    <string name="home_card_apply_leave_title">ছুটির আবেদন</string>
+    <string name="home_card_apply_leave_sub">নতুন ছুটির দরখাস্ত জমা দিন</string>
+    <string name="home_card_leave_history_title">ছুটির হিস্ট্রি</string>
+    <string name="home_card_leave_history_sub">ছুটি আবেদনের বর্তমান স্ট্যাটাস</string>
+
+    <!-- Admin Overview Dashboard -->
+    <string name="admin_overview_title">এক্সিকিউটিভ ড্যাশবোর্ড</string>
+    <string name="admin_overview_subtitle">ফিল্ড অপারেশন ও টিম অ্যানালিটিক্স</string>
+    <string name="admin_quick_action_hub">এক্সিকিউটিভ অ্যাকশন হাব</string>
+    <string name="admin_action_live_map">লাইভ ম্যাপ</string>
+    <string name="admin_action_attendance">উপস্থিতি</string>
+    <string name="admin_action_leaves">ছুটি ডেস্ক</string>
+    <string name="admin_action_reports">রিপোর্ট</string>
+    <string name="admin_action_users">টিম</string>
+    <string name="admin_card_active_officers">মাঠে সক্রিয়</string>
+    <string name="admin_card_today_visits">আজকের ভিজিট</string>
+    <string name="admin_card_pending_leaves">পেন্ডিং ছুটি</string>
+    <string name="admin_card_attendance_rate">উপস্থিতির হার</string>
+    <string name="admin_attention_required">⚠️ জরুরি নোটিস / ফলো-আপ</string>
+    <string name="admin_activity_feed">⚡ রিয়েল-টাইম অ্যাক্টিভিটি ফিড</string>
+    <string name="admin_nav_dashboard">ওভারভিউ ড্যাশবোর্ড</string>
+    <string name="admin_nav_live_map">লাইভ অফিসার ম্যাপ</string>
+    <string name="admin_nav_attendance">উপস্থিতি রিপোর্ট</string>
+    <string name="admin_nav_route_history">রুট হিস্ট্রি</string>
+    <string name="admin_nav_users">ইউজার ম্যানেজমেন্ট</string>
+    <string name="admin_nav_leaves">ছুটি আবেদনসমূহ</string>
+    <string name="admin_nav_logout">লগআউট</string>
+
+    <!-- Attendance Reports -->
+    <string name="attendance_reports_title">উপস্থিতি রিপোর্ট</string>
+    <string name="attendance_tab_monthly_summary">📊 মাসিক সামারি</string>
+    <string name="attendance_tab_detailed_logs">📋 বিস্তারিত লগ</string>
+    <string name="attendance_metric_present">🟢 উপস্থিত</string>
+    <string name="attendance_metric_ontime">⏱️ সঠিক সময়ে</string>
+    <string name="attendance_metric_late">🟡 দেরিতে</string>
+    <string name="attendance_metric_earlyout">🟠 আগে প্রস্থান</string>
+    <string name="attendance_metric_leave">🏖️ ছুটি</string>
+    <string name="attendance_metric_absent">🔴 অনুপস্থিত</string>
+    <string name="attendance_working_days_footer">📅 মোট কর্মদিবস: %d দিন (ছুটি ও সাপ্তাহিক ছুটি ব্যতীত)</string>
+    <string name="attendance_filter_all_months">সব মাস</string>
+    <string name="attendance_filter_all_years">সব বছর</string>
+    <string name="attendance_filter_all_employees">সকল কর্মকর্তা</string>
+    <string name="attendance_no_data">কোনো উপস্থিতির তথ্য পাওয়া যায়নি।</string>
+
+    <!-- Customer Visits -->
+    <string name="visits_title">কাস্টমার ভিজিট</string>
+    <string name="visits_record_new">নতুন দোকান ভিজিট রেকর্ড</string>
+    <string name="visits_customer_name">দোকান / কাস্টমার নাম</string>
+    <string name="visits_customer_phone">ফোন নম্বর</string>
+    <string name="visits_purpose">ভিজিটের উদ্দেশ্য</string>
+    <string name="visits_order_amount">অর্ডার পরিমাণ (টাকা)</string>
+    <string name="visits_collection_amount">কালেকশন পরিমাণ (টাকা)</string>
+    <string name="visits_notes">আলোচনার বিবরণ ও নোট</string>
+    <string name="visits_saved_success">কাস্টমার ভিজিট সফলভাবে সংরক্ষিত হয়েছে!</string>
+
+    <!-- Leaves -->
+    <string name="leaves_title">ছুটির আবেদনসমূহ</string>
+    <string name="leaves_apply_new">ছুটির জন্য আবেদন</string>
+    <string name="leaves_type">ছুটির ধরণ</string>
+    <string name="leaves_start_date">শুরুর তারিখ</string>
+    <string name="leaves_end_date">শেষ তারিখ</string>
+    <string name="leaves_reason">ছুটির কারণ</string>
+    <string name="leaves_status_pending">অনুমোদন অপেক্ষমাণ</string>
+    <string name="leaves_status_approved">অনুমোদিত</string>
+    <string name="leaves_status_rejected">প্রত্যাখ্যাত</string>
+
+    <string-array name="user_roles">
+        <item>User</item>
+    </string-array>
+</resources>

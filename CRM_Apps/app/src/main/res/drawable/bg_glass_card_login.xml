@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Glass Base Card with Frosted Translucency -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="26dp" />
+            <solid android:color="#25FFFFFF" />
+            <stroke
+                android:width="1.5dp"
+                android:color="#40FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Top Gloss Sheen Highlight Layer -->
+    <item
+        android:bottom="20dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:topLeftRadius="24dp"
+                android:topRightRadius="24dp" />
+            <gradient
+                android:angle="270"
+                android:endColor="#00FFFFFF"
+                android:startColor="#30FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_gradient_start">
+
+        <!-- Top App Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_header_gradient"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/buttonBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_header_bell_circle"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Office Locations"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonAddOffice"
+            app:layout_constraintStart_toEndOf="@+id/buttonBack"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonAddOffice"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:backgroundTint="#2AFFFFFF"
+            android:fontFamily="sans-serif-medium"
+            android:text="+ Add Office"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="#55FFFFFF"
+            app:strokeWidth="1dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Search Box -->
+    <FrameLayout
+        android:id="@+id/layoutSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="6dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <EditText
+            android:id="@+id/editSearchOffice"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_glass_input"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="12dp"
+            android:hint="অফিস খুঁজুন (Search Office)..."
+            android:paddingHorizontal="16dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:textSize="14sp" />
+    </FrameLayout>
+
+    <!-- Office Locations List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerOffices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSearch"
+        tools:listitem="@layout/item_office_location" />
+
+    <!-- Empty State View -->
+    <TextView
+        android:id="@+id/textEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="🏢 কোনো অফিস লোকেশন পাওয়া যায়নি\nনতুন অফিস যোগ করতে '+ Add Office' চাপুন"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSearch" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Left Side Navigation Drawer -->
+    <include layout="@layout/layout_admin_drawer" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

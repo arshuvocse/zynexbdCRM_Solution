@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_glass_card"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/dialogShiftTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🕒 Add / Edit Shift"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Configure shift timings and grace period buffer."
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+
+    <!-- Shift Name Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Shift Name *"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editShiftName"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_input_field"
+        android:hint="e.g. Morning Shift"
+        android:inputType="textCapWords"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="#94A3B8"
+        android:textSize="14sp" />
+
+    <!-- Start Time & End Time Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal">
+
+        <!-- Start Time -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Time *"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPickStartTime"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:text="09:00 AM"
+                android:textColor="#2563EB"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- End Time -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Time *"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPickEndTime"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:text="06:00 PM"
+                android:textColor="#2563EB"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Grace Period Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Grace Period (Minutes) *"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editGracePeriod"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_input_field"
+        android:hint="15"
+        android:inputType="number"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="#94A3B8"
+        android:textSize="14sp" />
+
+    <!-- Is Default Checkbox -->
+    <CheckBox
+        android:id="@+id/checkboxIsDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Set as company default shift"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btnCancelShiftDialog"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:text="Cancel"
+            android:textColor="#64748B" />
+
+        <Button
+            android:id="@+id/btnSaveShift"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:backgroundTint="#2563EB"
+            android:text="Save Shift"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+</LinearLayout>

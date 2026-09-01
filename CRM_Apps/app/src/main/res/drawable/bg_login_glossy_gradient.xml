@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base Smooth Mesh Gradient (Rich Indigo-Slate Base) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="#0F172A"
+                android:centerColor="#1E1B4B"
+                android:endColor="#311B92"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Top Glossy Cyan Sheen Glow Layer -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:startColor="#300EA5E9"
+                android:centerColor="#156366F1"
+                android:endColor="#00000000"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Subtle Radial Soft Glass Highlight at top center -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:gradientRadius="400dp"
+                android:startColor="#25818CF8"
+                android:endColor="#00000000"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>

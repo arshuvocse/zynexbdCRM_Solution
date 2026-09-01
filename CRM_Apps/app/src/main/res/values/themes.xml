@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme explicitly locked to Light mode to preserve clean visual aesthetic -->
+    <style name="Theme.LiveTracking" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">#0B57D0</item>
+        <item name="android:navigationBarColor">#0D6EFD</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/content_sheet_bg</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="fontFamily">@font/solaimanlipi</item>
+        <item name="android:fontFamily">@font/solaimanlipi</item>
+    </style>
+
+    <!-- Navigation Drawer Subheader & Item Styles -->
+    <style name="DrawerSubheaderStyle" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textColor">#94A3B8</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/solaimanlipi</item>
+        <item name="android:fontFamily">@font/solaimanlipi</item>
+    </style>
+
+    <style name="DrawerItemStyle" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">#E2E8F0</item>
+        <item name="android:textSize">13.5sp</item>
+        <item name="fontFamily">@font/solaimanlipi</item>
+        <item name="android:fontFamily">@font/solaimanlipi</item>
+    </style>
+
+    <!-- Bottom Navigation Bar Styles -->
+    <style name="BottomNavActiveText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="fontFamily">@font/solaimanlipi</item>
+        <item name="android:fontFamily">@font/solaimanlipi</item>
+    </style>
+
+    <style name="BottomNavInactiveText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#B8D5FF</item>
+        <item name="fontFamily">@font/solaimanlipi</item>
+        <item name="android:fontFamily">@font/solaimanlipi</item>
+    </style>
+</resources>

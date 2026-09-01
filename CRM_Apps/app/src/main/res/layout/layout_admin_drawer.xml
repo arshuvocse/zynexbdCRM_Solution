@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="315dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="#22252D"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#22252D"
+        app:headerLayout="@layout/nav_header_admin"
+        app:itemBackground="@drawable/bg_drawer_item_selected"
+        app:itemIconTint="@color/bottom_nav_colors"
+        app:itemTextAppearance="@style/DrawerItemStyle"
+        app:itemTextColor="#E2E8F0"
+        app:menu="@menu/admin_drawer_menu"
+        app:subheaderColor="#94A3B8"
+        app:subheaderTextAppearance="@style/DrawerSubheaderStyle" />
+
+    <!-- Drawer Footer -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="18dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Powered By ZyNex Soft Tech"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

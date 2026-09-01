@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_main_gradient"
+        android:orientation="vertical">
+
+        <!-- Top Action Bar -->
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_header_gradient"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp">
+
+            <ImageButton
+                android:id="@+id/buttonBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_header_bell_circle"
+                android:contentDescription="Menu"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu"
+                app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Leave Applications"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonBulkApprove"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_gradient_button"
+            android:paddingHorizontal="12dp"
+            android:text="Bulk Approve"
+            android:textColor="@color/text_on_primary"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/filterRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonFilterPending"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button"
+            android:text="Pending"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonFilterApproved"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button_secondary"
+            android:text="Approved"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonFilterRejected"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button_secondary"
+            android:text="Rejected"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonFilterAll"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button_secondary"
+            android:text="All"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerLeave"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="12dp" />
+
+    </LinearLayout>
+
+    <!-- Left Side Navigation Drawer -->
+    <include layout="@layout/layout_admin_drawer" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

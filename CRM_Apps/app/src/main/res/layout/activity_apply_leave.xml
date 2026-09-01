@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main_gradient"
+    android:orientation="vertical">
+
+    <!-- Edge-to-edge Header TopBar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header_gradient"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp">
+
+        <ImageButton
+            android:id="@+id/buttonBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_header_bell_circle"
+            android:contentDescription="Back"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apply for Leave"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Submit leave request with auto holiday calculation"
+                android:textColor="#E0F2FE"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:id="@+id/cardContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="Leave Type"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_glass_input"
+                        android:paddingHorizontal="8dp">
+
+                        <Spinner
+                            android:id="@+id/spinnerLeaveType"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/textBalance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="14dp"
+                        android:text="Remaining: -"
+                        android:textColor="#2563EB"
+                        android:textStyle="bold"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="Start Date"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <EditText
+                        android:id="@+id/editStartDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@drawable/bg_glass_input"
+                        android:focusable="false"
+                        android:hint="Select start date"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="End Date"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <EditText
+                        android:id="@+id/editEndDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_glass_input"
+                        android:focusable="false"
+                        android:hint="Select end date"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+
+                    <TextView
+                        android:id="@+id/textHolidayExclusionNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="14dp"
+                        android:text="ℹ️ সাপ্তাহিক ছুটি (শুক্রবার) এবং সরকারি ছুটির দিনগুলো স্বয়ংক্রিয়ভাবে বাদ দিয়ে মোট কার্যদিবস হিসাব করা হবে।"
+                        android:textColor="#2563EB"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="Reason"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <EditText
+                        android:id="@+id/editReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/bg_glass_input"
+                        android:gravity="top"
+                        android:hint="Reason for leave"
+                        android:inputType="textMultiLine"
+                        android:padding="12dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/buttonSubmit"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_gradient_button"
+                        android:text="SUBMIT LEAVE APPLICATION"
+                        android:textColor="@color/text_on_primary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

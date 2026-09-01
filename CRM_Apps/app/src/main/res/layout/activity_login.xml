@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_clean_gradient"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <!-- Top Language Switcher Pill -->
+        <TextView
+            android:id="@+id/buttonLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_lang_pill"
+            android:elevation="3dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="7dp"
+            android:text="🌐 English 🇬🇧"
+            android:textColor="#3B82F6"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- App Branding Headline -->
+        <LinearLayout
+            android:id="@+id/layoutAppBranding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonLanguage">
+
+            <ImageView
+                android:id="@+id/imageAppLogo"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="CRM App Logo"
+                android:src="@drawable/app_logo" />
+
+            <TextView
+                android:id="@+id/textAppTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:letterSpacing="0.03"
+                android:text="@string/app_name"
+                android:textColor="#0F172A"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textAppSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:text="@string/app_tagline"
+                android:textColor="#2563EB"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- White Rounded Card Container -->
+        <LinearLayout
+            android:id="@+id/cardForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_login_card"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="24dp"
+            app:layout_constraintBottom_toTopOf="@id/layoutLoginFooter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutAppBranding"
+            app:layout_constraintVertical_bias="0.0">
+
+            <!-- Card Header: Employee Access -->
+            <TextView
+                android:id="@+id/textCardTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="22dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Employee Access"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <!-- Username Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundMode="none"
+                app:hintEnabled="false">
+
+                <EditText
+                    android:id="@+id/editUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_input_field"
+                    android:drawableStart="@drawable/ic_person_custom"
+                    android:drawableTint="#00A7EC"
+                    android:drawablePadding="14dp"
+                    android:hint="Username"
+                    android:inputType="text"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:boxBackgroundMode="none"
+                app:endIconMode="password_toggle"
+                app:endIconTint="#475569"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_input_field"
+                    android:drawableStart="@drawable/ic_lock_custom"
+                    android:drawableTint="#00A7EC"
+                    android:drawablePadding="14dp"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Gradient SIGN IN Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@drawable/bg_btn_signin"
+                android:elevation="4dp"
+                android:letterSpacing="0.06"
+                android:text="SIGN IN"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Branding Footer (Pinned at absolute bottom) -->
+        <LinearLayout
+            android:id="@+id/layoutLoginFooter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardForm"
+            app:layout_constraintVertical_bias="1.0">
+
+            <TextView
+                android:id="@+id/textFooterSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.04"
+                android:text="Powered by Zynex Soft Tech"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

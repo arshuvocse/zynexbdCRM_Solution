@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base Radiant Light Pastel Mesh Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="#E0EEFF"
+                android:centerColor="#EEF2FF"
+                android:endColor="#FAF5FF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Top Left Glossy Sky Sheen -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:startColor="#4038BDF8"
+                android:centerColor="#20818CF8"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Top Center Soft Glowing Radial Highlight -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:gradientRadius="450dp"
+                android:startColor="#50FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>

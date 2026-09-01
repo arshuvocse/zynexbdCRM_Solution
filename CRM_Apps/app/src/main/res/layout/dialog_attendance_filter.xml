@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_clean_rounded_card"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <!-- Header with Filter Icon & Title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_filter_custom"
+            app:tint="#4F46E5" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter Attendance &amp; Export"
+                android:textColor="#0F172A"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Month, Year &amp; Employee Filter"
+                android:textColor="#64748B"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/buttonCloseDialog"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Close"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="#64748B" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="14dp"
+        android:background="#E2E8F0" />
+
+    <!-- Month & Year Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Month Selector -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1.2"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="Select Month"
+                android:textColor="#0F172A"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_glass_input">
+
+                <Spinner
+                    android:id="@+id/spinnerMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="10dp" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Year Selector -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="Select Year"
+                android:textColor="#0F172A"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_glass_input">
+
+                <Spinner
+                    android:id="@+id/spinnerYear"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="10dp" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Employee Selector -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="6dp"
+        android:text="Select Employee / Officer"
+        android:textColor="#0F172A"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_glass_input">
+
+        <Spinner
+            android:id="@+id/spinnerEmployee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="10dp" />
+    </FrameLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:orientation="horizontal">
+
+        <!-- Reset Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonResetFilter"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button_secondary"
+            android:text="রিসেট"
+            android:textColor="#64748B"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- Search / Apply Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonApplySearch"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1.2"
+            android:background="@drawable/bg_gradient_button"
+            android:text="🔍 ফিল্টার প্রয়োগ"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="14dp"
+        android:background="#E2E8F0" />
+
+    <!-- Export Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="রিপোর্ট এক্সপোর্ট করুন (Export Report)"
+        android:textColor="#0F172A"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Export Excel Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonExportExcel"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_clean_rounded_card"
+            android:drawableStart="@drawable/ic_excel_export"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="14dp"
+            android:text="Excel (.csv)"
+            android:textColor="#107C41"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- Export PDF Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonExportPdf"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_clean_rounded_card"
+            android:drawableStart="@drawable/ic_pdf_export"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="14dp"
+            android:text="PDF Report"
+            android:textColor="#E11D48"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

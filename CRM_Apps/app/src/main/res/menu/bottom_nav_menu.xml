@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_customers"
+        android:icon="@drawable/ic_people_custom"
+        android:title="Customers" />
+    <item
+        android:id="@+id/nav_record_visit"
+        android:icon="@drawable/ic_map_custom"
+        android:title="Record Visit" />
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_nav_home_clean"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_followups"
+        android:icon="@drawable/ic_calendar_custom"
+        android:title="Follow-ups" />
+    <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/ic_history_custom"
+        android:title="History"
+        android:visible="false" />
+</menu>

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  livetracking-api:
+    build:
+      context: ./LiveTracking.Api
+      dockerfile: Dockerfile
+    container_name: livetracking_crm_api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=host.docker.internal,1433;Database=LiveTrackingDB;User Id=sa;Password=sa1234;TrustServerCertificate=True;MultipleActiveResultSets=true
+      - Jwt__Key=ld97g7s2bDdov9NWrcD2q2Se9me9SMFEm8dYgjtATBiYwEvsO0CtDtmvIoqV0EJP
+      - Jwt__Issuer=LiveTracking.Api
+      - Jwt__Audience=LiveTracking.Clients
+      - Jwt__ExpiryHours=12
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

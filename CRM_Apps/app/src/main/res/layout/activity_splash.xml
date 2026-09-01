@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_splash_gradient"
+    android:padding="24dp">
+
+    <!-- Top Glow / Spacer -->
+    <View
+        android:id="@+id/glowTop"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:alpha="0.2"
+        android:background="@drawable/bg_avatar_circle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Center Branding Container -->
+    <LinearLayout
+        android:id="@+id/layoutSplashBrand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/cardQuote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <!-- App Logo with Shadow/Glow -->
+        <ImageView
+            android:id="@+id/imageSplashLogo"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:contentDescription="CRM App Logo"
+            android:elevation="12dp"
+            android:src="@drawable/app_logo" />
+
+        <!-- CRM Main Title -->
+        <!-- DeshiCRM Main Title -->
+        <TextView
+            android:id="@+id/textCrmTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <!-- Subtitle / Tagline -->
+        <TextView
+            android:id="@+id/textCrmSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.03"
+            android:text="@string/app_tagline"
+            android:textColor="#60A5FA"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textWorkforceTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:text="Smart Workforce &amp; Growth Engine"
+            android:textColor="#94A3B8"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Beautiful Quote Card (বাণী) -->
+    <LinearLayout
+        android:id="@+id/cardQuote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_quote_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="18dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutSplashFooter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSplashBrand">
+
+        <!-- Quote Icon -->
+        <TextView
+            android:id="@+id/textQuoteIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="❝"
+            android:textColor="#38BDF8"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Quote in Bengali (বাণী) -->
+        <TextView
+            android:id="@+id/textQuoteBn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-6dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:text="গ্রাহকের আস্থাই ব্যবসার মূল শক্তি,\nপ্রতিটি সংযোগেই উন্মোচিত হয় নতুন সম্ভাবনা।"
+            android:textColor="#F1F5F9"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- Quote in English -->
+        <TextView
+            android:id="@+id/textQuoteEn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="&quot;Customer trust is the core of success — Every connection opens new possibilities.&quot;"
+            android:textColor="#94A3B8"
+            android:textSize="11.5sp"
+            android:textStyle="italic" />
+
+    </LinearLayout>
+
+    <!-- Footer: Progress + Powered By -->
+    <LinearLayout
+        android:id="@+id/layoutSplashFooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ProgressBar
+            android:id="@+id/progressSplash"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#38BDF8" />
+
+        <TextView
+            android:id="@+id/textPoweredBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:letterSpacing="0.04"
+            android:text="Powered by Zynex Soft Tech"
+            android:textColor="#64748B"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

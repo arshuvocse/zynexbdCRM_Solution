@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="6dp"
+    android:background="@drawable/bg_glass_card"
+    android:elevation="6dp"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <!-- Top Header: Prominent Date Badge + Duty Duration Pill -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_glass_input"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="📅 28 Aug 2026"
+            android:textColor="#1E293B"
+            android:textSize="13.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textDutyDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_glass_input"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="⏱️ Duty: 8 hrs 30 mins"
+            android:textColor="#059669"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Hidden compatibility layoutDutyDuration -->
+    <LinearLayout
+        android:id="@+id/layoutDutyDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <!-- Employee Name Row (Admin View) -->
+    <TextView
+        android:id="@+id/textUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="👤 Shuvo (Sales Officer)"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <!-- Row: Type + Shift + Status + Geofence -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_glass_input"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="🟢 Duty In"
+            android:textColor="#059669"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_glass_input"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="🕒 09:30 AM"
+            android:textColor="#2563EB"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textShift"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="🔄 General Shift"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_status_active"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="🟢 On Time"
+            android:textColor="#FFFFFF"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textGeofence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_active"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="✅ Office"
+            android:textColor="#FFFFFF"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Hidden timestamp for backward compatibility -->
+    <TextView
+        android:id="@+id/textTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <!-- Attendance Location & Google Map Button Row -->
+    <LinearLayout
+        android:id="@+id/layoutLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_glass_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_map_custom" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textLocationAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 লোকেশন লোড হচ্ছে..."
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textCoordinates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="23.79282, 90.37036"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonOpenMap"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:background="@drawable/bg_gradient_button"
+            android:paddingHorizontal="10dp"
+            android:text="🗺️ Map"
+            android:textColor="@color/text_on_primary"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Selfie Image Container (visible only when selfieUrl is not null) -->
+    <FrameLayout
+        android:id="@+id/containerSelfie"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginTop="10dp"
+        android:clipToOutline="true"
+        android:background="@drawable/bg_glass_card"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageSelfie"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Attendance Selfie" />
+
+        <ProgressBar
+            android:id="@+id/progressSelfie"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <!-- Tap to preview badge -->
+        <TextView
+            android:id="@+id/badgePreviewHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:background="#AA0F172A"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="🔍 ছবি দেখুন (Tap to preview)"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+</LinearLayout>

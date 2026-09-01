@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_admin_map"
+        android:icon="@drawable/ic_map_custom"
+        android:title="Live Map" />
+    <item
+        android:id="@+id/nav_admin_route"
+        android:icon="@drawable/ic_history_custom"
+        android:title="Route History" />
+    <item
+        android:id="@+id/nav_admin_overview"
+        android:icon="@drawable/ic_nav_home_clean"
+        android:title="Overview" />
+    <item
+        android:id="@+id/nav_admin_users"
+        android:icon="@drawable/ic_people_custom"
+        android:title="Employees" />
+    <item
+        android:id="@+id/nav_admin_leave"
+        android:icon="@drawable/ic_calendar_custom"
+        android:title="Leaves" />
+</menu>

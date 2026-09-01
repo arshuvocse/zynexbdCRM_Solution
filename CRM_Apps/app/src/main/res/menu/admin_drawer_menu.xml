@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <!-- Active CRM Modules -->
+        <item
+            android:id="@+id/nav_crm_dashboard"
+            android:icon="@drawable/ic_people_custom"
+            android:title="💼 CRM Dashboard" />
+
+        <item
+            android:id="@+id/nav_crm_leads"
+            android:icon="@drawable/ic_people_custom"
+            android:title="📋 CRM Leads" />
+
+        <item
+            android:id="@+id/nav_crm_productivity"
+            android:icon="@drawable/ic_pulse"
+            android:title="📊 CRM Productivity" />
+
+        <item
+            android:id="@+id/nav_crm_kpi"
+            android:icon="@drawable/ic_reports_chart"
+            android:title="🎯 CRM KPI Setup" />
+
+        <item
+            android:id="@+id/nav_users"
+            android:icon="@drawable/ic_people_custom"
+            android:title="👥 Employee Directory" />
+
+        <item
+            android:id="@+id/nav_performance"
+            android:icon="@drawable/ic_pulse"
+            android:title="📈 Performance &amp; Reports" />
+
+        <item
+            android:id="@+id/nav_payment"
+            android:icon="@drawable/ic_lock_custom"
+            android:title="💳 Payment Management" />
+
+        <!-- Hidden non-CRM / Inactive items -->
+        <item
+            android:id="@+id/nav_overview"
+            android:icon="@drawable/ic_person_custom"
+            android:title="Executive Dashboard"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_custom"
+            android:title="Live Map Tracking"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_route_history"
+            android:icon="@drawable/ic_map_custom"
+            android:title="Route History"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_attendance"
+            android:icon="@drawable/ic_attendance_custom"
+            android:title="Attendance Reports"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_leave"
+            android:icon="@drawable/ic_leave_custom"
+            android:title="Leave Applications"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_shifts"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:title="Shift Management"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_holidays"
+            android:icon="@drawable/ic_calendar"
+            android:title="Holiday Calendar"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_offices"
+            android:icon="@drawable/ic_map_custom"
+            android:title="Office Locations"
+            android:visible="false" />
+    </group>
+
+    <item android:title="Help &amp; Account">
+        <menu>
+            <item
+                android:id="@+id/nav_support"
+                android:icon="@drawable/ic_call_custom"
+                android:title="💬 Help &amp; Support" />
+
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout_custom"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

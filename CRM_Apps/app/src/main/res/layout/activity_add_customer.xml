@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main_gradient"
+    android:orientation="vertical">
+
+    <!-- Header TopBar with Back Button -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header_gradient"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/buttonBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_header_bell_circle"
+            android:contentDescription="Back"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add New Customer"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fast customer creation with automated live GPS"
+                android:textColor="#E0F2FE"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                <!-- Customer Name -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CUSTOMER NAME *"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editCustomerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_glass_input"
+                    android:hint="Enter customer / shop name"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- Mobile Number -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MOBILE NUMBER (১১ ডিজিট) *"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editMobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_glass_input"
+                    android:hint="01XXXXXXXXX (11 digits)"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- Email Address (Optional) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EMAIL ADDRESS (ইমেইল - ঐচ্ছিক)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_glass_input"
+                    android:hint="customer@example.com (optional)"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- Address -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SHOP / BUSINESS ADDRESS *"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_glass_input"
+                    android:gravity="top|start"
+                    android:hint="Enter full address"
+                    android:inputType="textMultiLine"
+                    android:padding="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- GPS Status Badge -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_status_active_pill"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/textGpsStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="GPS Location: Auto-capturing..."
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Remarks (Optional) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="REMARKS (OPTIONAL)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editRemarks"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_glass_input"
+                    android:hint="Optional notes or references"
+                    android:inputType="text"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <!-- Submit Button -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/buttonSaveCustomer"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_gradient_button"
+                    android:text="SAVE CUSTOMER"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

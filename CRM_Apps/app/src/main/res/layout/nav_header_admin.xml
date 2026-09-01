@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="210dp"
+    android:background="@drawable/bg_admin_nav_header_glossy"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Top Logo & Language Action Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Glowing Avatar Circle with Logo -->
+        <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_avatar_circle">
+
+            <ImageView
+                android:id="@+id/imageNavLogo"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:contentDescription="Company Logo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_person_custom"
+                app:tint="#FFFFFF" />
+        </FrameLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Role Badge Pill -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_status_active_pill"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="ADMIN"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <!-- Language Button -->
+        <TextView
+            android:id="@+id/buttonNavLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_glass_card_login"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:text="🌐 EN/BN"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textNavTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0.04"
+        android:text="DESHICRM ENTERPRISE"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textNavSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="Logged in as admin"
+        android:textColor="#93C5FD"
+        android:textSize="13sp" />
+
+</LinearLayout>

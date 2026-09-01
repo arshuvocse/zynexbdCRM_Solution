@@ -1,0 +1,1008 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/content_sheet_bg">
+
+        <!-- Top Header Bar with Royal Blue Gradient matching reference image -->
+        <LinearLayout
+            android:id="@+id/layoutAdminHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/bg_header_gradient"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="36dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/buttonMenu"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_header_bell_circle"
+                    android:contentDescription="Navigation Menu"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_menu"
+                    app:tint="#FFFFFF" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Home"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Executive Dashboard"
+                        android:textColor="#E0F2FE"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Language Switcher Button -->
+                <TextView
+                    android:id="@+id/buttonAdminLanguage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_header_bell_circle"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:text="🌐 EN/বাং"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <!-- Add User Quick Action -->
+                <ImageView
+                    android:id="@+id/buttonAddUser"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_header_bell_circle"
+                    android:contentDescription="Add User"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_people_custom"
+                    app:tint="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/layoutAdminHeader"
+            android:layout_marginTop="-24dp"
+            android:layout_above="@id/layoutBottomNavContainer">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_content_sheet"
+                android:clipToPadding="false"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="24dp">
+
+                    <!-- Subscription Warning / Expiry Banner -->
+                    <LinearLayout
+                        android:id="@+id/cardSubscriptionWarningBanner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_clean_card_warning"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/ic_lock_custom"
+                            app:tint="#D97706" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textSubscriptionWarningTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚠️ বিল পরিশোধের সতর্কতা"
+                                android:textColor="#B45309"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textSubscriptionWarningMessage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="মেয়াদ শেষ হতে আর ৩ দিন বাকি আছে"
+                                android:textColor="@color/text_primary"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/buttonPayNow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_gradient_button"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="6dp"
+                            android:text="Contact"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Hero Section: Operational KPI Grid (2x2 Glowing Gradient Cards) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+                        <!-- Row 1: Total Field Users & Live GPS Active -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:orientation="horizontal">
+
+                            <!-- Card 1: Total Field Users -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_card_indigo"
+                                android:elevation="8dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="TOTAL EMPLOYEES"
+                                    android:textColor="#E0E7FF"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricTotalUsers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="0"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricActiveDrivers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="0 Active Officers"
+                                    android:textColor="#C7D2FE"
+                                    android:textSize="11sp" />
+                            </LinearLayout>
+
+                            <!-- Card 2: Live Tracking Active -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_card_emerald"
+                                android:elevation="8dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="LIVE GPS ONLINE"
+                                    android:textColor="#D1FAE5"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricOnlineTracking"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="0"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricPunchedIn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="0 Duty In Today"
+                                    android:textColor="#A7F3D0"
+                                    android:textSize="11sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Row 2: Attendance & Leave Overview -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <!-- Card 3: Pending Requests -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_card_amber"
+                                android:elevation="8dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="PENDING REQUESTS"
+                                    android:textColor="#FEF3C7"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricPendingLeaves"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="0"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricPendingFollowups"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="0 Follow-Ups"
+                                    android:textColor="#FDE68A"
+                                    android:textSize="11sp" />
+                            </LinearLayout>
+
+                            <!-- Card 4: Absent & GPS Disabled Alerts -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_card_rose"
+                                android:elevation="8dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ATTENTION ALERTS"
+                                    android:textColor="#FFE4E6"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricAbsent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="0"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textMetricGpsDisabled"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="0 Off Duty / Late"
+                                    android:textColor="#FECDD3"
+                                    android:textSize="11sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Visual Analytics & Charts Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp"
+                        android:layout_marginBottom="10dp"
+                        android:letterSpacing="0.04"
+                        android:text="VISUAL ANALYTICS &amp; CHARTS"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+
+                    <!-- 1. Today's Attendance Breakdown Donut Chart Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="6dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Workforce Attendance Ratio"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Today's presence, punctuality and leave ratio"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11.5sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <com.zynexbd.crmsolution.views.DonutChartView
+                                    android:id="@+id/donutChartAttendance"
+                                    android:layout_width="140dp"
+                                    android:layout_height="140dp" />
+
+                                <!-- Legend / Metrics Breakdown -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/textChartOnTime"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="3dp"
+                                        android:text="🟢 0 On Time"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12.5sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/textChartLate"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="3dp"
+                                        android:text="🟡 0 Late Entry"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12.5sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/textChartLeave"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="3dp"
+                                        android:text="🏖️ 0 On Leave"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12.5sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/textChartAbsent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="3dp"
+                                        android:text="🔴 0 Absent"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12.5sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- 2. Weekly Field Operations Velocity Bar Chart Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="6dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Weekly Field Velocity"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Customer Visits vs Follow-Ups (7 Days)"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11.5sp" />
+                                </LinearLayout>
+
+                                <!-- Legend Badges -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="🟦 Visits"
+                                        android:textColor="#818CF8"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="🟩 Follow-ups"
+                                        android:textColor="#22D3EE"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <com.zynexbd.crmsolution.views.BarChartView
+                                android:id="@+id/barChartWeeklyActivity"
+                                android:layout_width="match_parent"
+                                android:layout_height="170dp"
+                                android:layout_marginTop="14dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Hidden bindings for compatibility -->
+                    <TextView android:id="@+id/textMetricLate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone" />
+                    <TextView android:id="@+id/textHealthStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone" />
+
+                    <!-- Quick Executive Action Hub (4 Shortcut Cards) -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:letterSpacing="0.04"
+                        android:text="QUICK ACTION HUB"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Action 1: Live Map Tracking -->
+                        <LinearLayout
+                            android:id="@+id/cardActionLiveMap"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="14dp"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_map_custom"
+                                app:tint="#2563EB" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Live Map"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Action 2: Performance Reports -->
+                        <LinearLayout
+                            android:id="@+id/cardActionReports"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="14dp"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_pulse"
+                                app:tint="#7C3AED" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Reports"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Action 3: Leave Approvals -->
+                        <LinearLayout
+                            android:id="@+id/cardActionLeaves"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="14dp"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_leave_custom"
+                                app:tint="#F59E0B" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Leaves"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Action 4: Attendance Logs -->
+                        <LinearLayout
+                            android:id="@+id/cardActionAttendance"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="14dp"
+                            android:paddingHorizontal="8dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_attendance_custom"
+                                app:tint="#059669" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Attendance"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Top Performers / Leaderboard Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        android:layout_marginBottom="10dp"
+                        android:letterSpacing="0.04"
+                        android:text="🏆 TOP FIELD OFFICERS (LEADERBOARD)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+
+                    <!-- Top 3 Leaderboard Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- 1st Place Card (Gold) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1.1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="5dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🥇 Top 1"
+                                android:textColor="#D97706"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer1Name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:text="Abdur Rahim"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer1Stats"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="📍 6 Visits • 4 F-Up"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="10.5sp" />
+                        </LinearLayout>
+
+                        <!-- 2nd Place Card (Silver) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🥈 Rank 2"
+                                android:textColor="#64748B"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer2Name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:text="Tanvir Ahmed"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer2Stats"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="📍 4 Visits • 2 F-Up"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="10.5sp" />
+                        </LinearLayout>
+
+                        <!-- 3rd Place Card (Bronze) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_clean_rounded_card"
+                            android:elevation="4dp"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🥉 Rank 3"
+                                android:textColor="#B45309"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer3Name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:text="Mohibullah Dipu"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textTopPerformer3Stats"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="📍 4 Visits • 2 F-Up"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="10.5sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Attention Required Horizontal Carousel Section -->
+                    <LinearLayout
+                        android:id="@+id/containerAttentionSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.06"
+                            android:text="🚨 ATTENTION REQUIRED"
+                            android:textColor="@color/statusInactive"
+                            android:textSize="12.5sp"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerAttention"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:clipToPadding="false"
+                            android:orientation="horizontal" />
+                    </LinearLayout>
+
+                    <!-- Section Header: Real-Time Field Activity Stream -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:letterSpacing="0.04"
+                            android:text="⚡ LIVE FIELD ACTIVITY FEED"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12.5sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/buttonViewAllActivity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reports ➔"
+                            android:textColor="#2563EB"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Activity Feed Card Container -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:elevation="4dp"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerActivityFeed"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false" />
+
+                        <TextView
+                            android:id="@+id/textNoRecentActivity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="16dp"
+                            android:text="আজকের কোনো নতুন কার্যক্রম এখনো রেকর্ড হয়নি"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Royal Blue Admin Bottom Navigation Dock with Protruding Floating Center Home Circle -->
+        <RelativeLayout
+            android:id="@+id/layoutBottomNavContainer"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_alignParentBottom="true">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/bg_bottom_nav_dock"
+                android:elevation="8dp"
+                app:elevation="8dp"
+                app:itemIconSize="22dp"
+                app:itemIconTint="@color/bottom_nav_colors"
+                app:itemRippleColor="#30FFFFFF"
+                app:itemTextAppearanceActive="@style/BottomNavActiveText"
+                app:itemTextAppearanceInactive="@style/BottomNavInactiveText"
+                app:itemTextColor="@color/bottom_nav_colors"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/admin_bottom_nav_menu" />
+
+            <!-- Protruding Floating Center Home Circle Button -->
+            <FrameLayout
+                android:id="@+id/buttonNavCenterHome"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/bg_nav_floating_center_btn"
+                android:clickable="true"
+                android:elevation="14dp"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Home"
+                    android:src="@drawable/ic_nav_home_clean"
+                    app:tint="#FFFFFF" />
+            </FrameLayout>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <!-- Left Side Navigation Drawer with Header and Footer -->
+    <LinearLayout
+        android:layout_width="315dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#22252D"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#22252D"
+            app:headerLayout="@layout/nav_header_admin"
+            app:itemBackground="@drawable/bg_drawer_item_selected"
+            app:itemIconTint="@color/bottom_nav_colors"
+            app:itemTextAppearance="@style/DrawerItemStyle"
+            app:itemTextColor="#E2E8F0"
+            app:subheaderColor="#94A3B8"
+            app:subheaderTextAppearance="@style/DrawerSubheaderStyle"
+            app:menu="@menu/admin_drawer_menu" />
+
+        <!-- Drawer Footer matching screenshot -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smart Workforce"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Powered By ZyNex Soft Tech"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

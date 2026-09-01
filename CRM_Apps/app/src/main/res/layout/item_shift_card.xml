@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="6dp"
+    android:background="@drawable/bg_glass_card"
+    android:elevation="4dp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top Row: Shift Name + Default Badge -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textShiftName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="General Shift"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/badgeDefaultShift"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_active"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="★ DEFAULT SHIFT"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Timing & Grace Period Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Time Range Chip -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textShiftTimeRange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🕒 09:00 AM – 06:00 PM"
+                android:textColor="#2563EB"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Grace Period Chip -->
+        <TextView
+            android:id="@+id/textGracePeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#142563EB"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="⏱ 15m Grace"
+            android:textColor="#2563EB"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="12dp"
+        android:background="#1A000000" />
+
+    <!-- Actions Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end|center_vertical">
+
+        <Button
+            android:id="@+id/btnSetDefault"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Set Default"
+            android:textColor="#2563EB"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnEditShift"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="✏️ Edit"
+            android:textColor="#4B5563"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnDeleteShift"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="🗑 Delete"
+            android:textColor="#EF4444"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

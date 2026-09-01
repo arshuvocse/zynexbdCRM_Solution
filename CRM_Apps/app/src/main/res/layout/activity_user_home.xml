@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/content_sheet_bg">
+
+    <!-- Top Header Bar with Royal Blue Gradient matching reference image -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_header_gradient"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="36dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Home"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <!-- Company Name (Right Top Corner) -->
+            <TextView
+                android:id="@+id/textBrandLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- Hidden stubs for binding compatibility -->
+            <TextView
+                android:id="@+id/buttonUserLanguage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/buttonNotifications"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- User Greeting -->
+        <TextView
+            android:id="@+id/textWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="আসসালামু আলাইকুম, (User full name)"
+            android:textColor="#E0F2FE"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Top Rounded Content Sheet overlaying header -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/layoutHeader"
+        android:layout_marginTop="-24dp"
+        android:layout_above="@id/layoutBottomNavContainer"
+        android:background="@drawable/bg_content_sheet"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- Guide Button (Hidden in User UI) -->
+            <TextView
+                android:id="@+id/buttonGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <!-- Quick Utility Pills Row: GPS, Network, Battery -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textGpsPill"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_status_active_pill"
+                    android:gravity="center"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="5dp"
+                    android:text="GPS: ACTIVE"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textNetworkPill"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_status_active_pill"
+                    android:gravity="center"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="5dp"
+                    android:text="ONLINE"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textBatteryPill"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_status_active_pill"
+                    android:gravity="center"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="5dp"
+                    android:text="BATTERY: 100%"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Digital Workspace Banner Card -->
+            <LinearLayout
+                android:id="@+id/cardDigitalWorkspace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_clean_rounded_card"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="20dp"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.06"
+                    android:text="WELCOME TO YOUR"
+                    android:textColor="#0284C7"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:letterSpacing="0.04"
+                    android:text="DIGITAL WORKSPACE"
+                    android:textColor="#0F172A"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Duty Action Buttons (DUTY IN / DUTY OUT) [HIDDEN] -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <!-- DUTY IN Button -->
+                <LinearLayout
+                    android:id="@+id/buttonDutyIn"
+                    android:layout_width="0dp"
+                    android:layout_height="58dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_duty_in"
+                    android:clickable="true"
+                    android:elevation="6dp"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:id="@+id/imageDutyInIcon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_duty_in" />
+
+                    <TextView
+                        android:id="@+id/textDutyInLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.04"
+                        android:text="DUTY IN"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- DUTY OUT Button -->
+                <LinearLayout
+                    android:id="@+id/buttonDutyOut"
+                    android:layout_width="0dp"
+                    android:layout_height="58dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_duty_out"
+                    android:clickable="true"
+                    android:elevation="6dp"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:id="@+id/imageDutyOutIcon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_duty_out" />
+
+                    <TextView
+                        android:id="@+id/textDutyOutLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.04"
+                        android:text="DUTY OUT"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Section Title: TODAY'S OVERVIEW -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="0.06"
+                android:text="TODAY'S OVERVIEW"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- 2 Overview Cards Row (Visits Done & Follow Ups) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Duty In Time / Duration Card [HIDDEN] -->
+                <LinearLayout
+                    android:id="@+id/cardPunchIn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_clean_rounded_card"
+                    android:elevation="3dp"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/textPunchInStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duty In"
+                        android:textColor="#64748B"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textPunchInTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="--:--"
+                        android:textColor="#4F46E5"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Visits Done Card -->
+                <LinearLayout
+                    android:id="@+id/cardVisits"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_clean_rounded_card"
+                    android:elevation="3dp"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Visits Done"
+                        android:textColor="#64748B"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textVisitsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="#0284C7"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Follow Ups Card -->
+                <LinearLayout
+                    android:id="@+id/cardFollowUps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_clean_rounded_card"
+                    android:elevation="3dp"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Follow-Ups"
+                        android:textColor="#64748B"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textFollowUpsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="#D97706"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Section Title: FIELD OPERATIONS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="0.06"
+                android:text="FIELD OPERATIONS"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- 2x2 Operations Action Grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Row 1: CRM Dashboard & Leads (Top CRM Operations) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+
+                    <!-- CRM Dashboard -->
+                    <LinearLayout
+                        android:id="@+id/cardCrmDashboard"
+                        android:layout_width="0dp"
+                        android:layout_height="116dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_people_custom"
+                            app:tint="#059669" />
+
+                        <TextView
+                            android:id="@+id/buttonCrmDashboard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="CRM\nDashboard"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KPI &amp; Targets"
+                            android:textColor="#94A3B8"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <!-- CRM Leads -->
+                    <LinearLayout
+                        android:id="@+id/cardCrmLeads"
+                        android:layout_width="0dp"
+                        android:layout_height="116dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_edit"
+                            app:tint="#0D6EFD" />
+
+                        <TextView
+                            android:id="@+id/buttonCrmLeads"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="CRM\nLeads"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="My Pipeline &amp; Follow-up"
+                            android:textColor="#94A3B8"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 2: Dealers/Customers & Follow-Ups -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+
+                    <!-- Dealers / Customers Directory -->
+                    <LinearLayout
+                        android:id="@+id/cardCustomers"
+                        android:layout_width="0dp"
+                        android:layout_height="116dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_people_custom"
+                            app:tint="#4F46E5" />
+
+                        <TextView
+                            android:id="@+id/buttonCustomers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Dealers/\nCustomers"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Directory &amp; Add"
+                            android:textColor="#94A3B8"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <!-- Follow-Ups Operations -->
+                    <LinearLayout
+                        android:id="@+id/buttonFollowUps"
+                        android:layout_width="0dp"
+                        android:layout_height="116dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_calendar_custom"
+                            app:tint="#EA580C" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Follow-Ups"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="Tasks &amp; Schedules"
+                            android:textColor="#94A3B8"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 3: Record Visit & Duty Log [Hidden] -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Record Visit Log -->
+                    <LinearLayout
+                        android:id="@+id/cardRecordVisit"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:clickable="true"
+                        android:elevation="3dp"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="18dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_map_custom"
+                            app:tint="#0284C7" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/buttonRecordVisit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Record Visit"
+                                android:textColor="#0F172A"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GPS Log &amp; Store Visit Photos"
+                                android:textColor="#94A3B8"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Duty Log (Attendance Log) [HIDDEN] -->
+                    <LinearLayout
+                        android:id="@+id/cardAttendanceHistory"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/buttonAttendanceHistory"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 4: Leave Management & History -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_clean_rounded_card"
+                    android:elevation="3dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_leave_custom"
+                        app:tint="#D97706" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Leave Management"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Apply &amp; View History"
+                            android:textColor="#94A3B8"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/buttonApplyLeave"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_btn_duty_in"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:text="Apply"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/buttonLeaveHistory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_clean_rounded_card"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="6dp"
+                        android:text="History"
+                        android:textColor="#4F46E5"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Bottom Logout Action -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/buttonLogout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_gradient_button_secondary"
+                android:text="LOG OUT OF SESSION"
+                android:textColor="@color/statusInactive"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Royal Blue Bottom Navigation Dock with Protruding Floating Center Home Circle -->
+    <RelativeLayout
+        android:id="@+id/layoutBottomNavContainer"
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:layout_alignParentBottom="true">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_bottom_nav_dock"
+            android:elevation="8dp"
+            app:elevation="8dp"
+            app:itemIconSize="22dp"
+            app:itemIconTint="@color/bottom_nav_colors"
+            app:itemRippleColor="#30FFFFFF"
+            app:itemTextAppearanceActive="@style/BottomNavActiveText"
+            app:itemTextAppearanceInactive="@style/BottomNavInactiveText"
+            app:itemTextColor="@color/bottom_nav_colors"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu" />
+
+        <!-- Protruding Floating Center Home Circle Button -->
+        <FrameLayout
+            android:id="@+id/buttonNavCenterHome"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/bg_nav_floating_center_btn"
+            android:clickable="true"
+            android:elevation="14dp"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="Home"
+                android:src="@drawable/ic_nav_home_clean"
+                app:tint="#FFFFFF" />
+        </FrameLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

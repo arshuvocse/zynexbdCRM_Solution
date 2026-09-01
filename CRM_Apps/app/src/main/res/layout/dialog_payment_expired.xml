@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_clean_rounded_card"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Warning Icon with glow background -->
+    <FrameLayout
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:background="@drawable/bg_clean_card_danger">
+
+        <ImageView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:contentDescription="Payment Expired"
+            android:src="@drawable/ic_lock_custom"
+            app:tint="#EF4444" />
+    </FrameLayout>
+
+    <!-- Main Title -->
+    <TextView
+        android:id="@+id/textModalTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="সাবস্ক্রিপশনের মেয়াদ শেষ!"
+        android:textColor="#991B1B"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Subtitle / English Title -->
+    <TextView
+        android:id="@+id/textModalSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Account Subscription Expired"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- Expiry Details Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_clean_card_neutral"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <TextView
+            android:id="@+id/textExpiryDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="মেয়াদ উত্তীর্ণের তারিখ: N/A"
+            android:textColor="#DC2626"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textExpiryMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="আপনার অ্যাকাউন্টের বিল পরিশোধের মেয়াদ শেষ হয়েছে। অ্যাপের সকল ফিচার ও ট্র্যাকিং সার্ভিস পুনরায় চালু করতে অবিলম্বে বিল পরিশোধ করুন অথবা অ্যাডমিনের সাথে যোগাযোগ করুন।"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Support Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCallSupport"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button"
+            android:drawableStart="@drawable/ic_call_custom"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="14dp"
+            android:text="সাপোর্টে কল"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonWhatsAppSupport"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_gradient_button_secondary"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="14dp"
+            android:text="💬 WhatsApp"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Refresh Status Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonRefreshStatus"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_glass_card"
+        android:text="🔄 পেমেন্ট করেছি (রিফ্রেশ করুন)"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- Unclosable Warning Note -->
+    <TextView
+        android:id="@+id/textFooterWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="🔒 সার্ভিস বন্ধ রয়েছে"
+        android:textColor="@color/text_muted"
+        android:textSize="11sp" />
+
+</LinearLayout>

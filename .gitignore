@@ -1,0 +1,36 @@
+# Visual Studio / .NET
+.vs/
+bin/
+obj/
+publish/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# Android / Gradle / IntelliJ
+.gradle/
+build/
+**/build/
+*.iml
+.idea/
+local.properties
+.cxx/
+*.apk
+*.aab
+*.ap_
+captures/
+hs_err_pid*.log
+replay_pid*.log
+
+# OS Generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary & logs
+*.tmp
+*.temp
+*.log

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moxx Live Tracking System - Server API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 26, 43, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --success: #10b981;
+            --accent: #6366f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 24px;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow-1 { top: -100px; left: -100px; opacity: 0.6; }
+        .glow-2 { bottom: -100px; right: -100px; opacity: 0.4; background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%); }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 44px 36px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 24px -6px var(--primary-glow);
+        }
+
+        .logo-icon svg {
+            width: 36px;
+            height: 36px;
+            fill: #ffffff;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 15px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .feature-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-card p {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px -4px var(--primary-glow);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -4px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        @media (max-width: 520px) {
+            .container { padding: 32px 20px; }
+            .features-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="container">
+        <div class="badge-status">
+            <div class="status-dot"></div>
+            <span>API Server Active &amp; Running</span>
+        </div>
+
+        <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+        </div>
+
+        <h1>Moxx Live Tracking System</h1>
+        <p class="subtitle">Real-time GPS Tracking, Attendance with Selfie, Leave Management &amp; Customer Visit Operations Server</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h4>📍 Live GPS Engine</h4>
+                <p>High precision SignalR pinging &amp; route playback</p>
+            </div>
+            <div class="feature-card">
+                <h4>🤳 Selfie Attendance</h4>
+                <p>Geofence validation &amp; smart shift tracking</p>
+            </div>
+            <div class="feature-card">
+                <h4>🏢 Customer Visits</h4>
+                <p>Field visit logs, shop photos &amp; follow-ups</p>
+            </div>
+            <div class="feature-card">
+                <h4>🛡️ Secure JWT Auth</h4>
+                <p>Device binding &amp; role-based security</p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/swagger" class="btn btn-primary" id="swagger-btn">
+                <span>📖 View Swagger API Documentation</span>
+            </a>
+            <a href="/downloads/app-release.apk" class="btn btn-secondary" id="download-app-btn">
+                <span>📲 Download Android App (APK)</span>
+            </a>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Moxx Live Tracking System. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

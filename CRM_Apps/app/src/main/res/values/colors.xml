@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core Theme Palette (Vibrant Royal Blue & Clean Accent) -->
+    <color name="colorPrimary">#0D6EFD</color>
+    <color name="primary">#0D6EFD</color>
+    <color name="colorPrimaryDark">#0B57D0</color>
+    <color name="colorAccent">#38BDF8</color>
+    <color name="header_blue_start">#0B57D0</color>
+    <color name="header_blue_end">#1D70F5</color>
+    <color name="nav_blue">#0D6EFD</color>
+    <color name="nav_blue_dark">#0B5ED7</color>
+    <color name="nav_unselected">#B8D5FF</color>
+    <color name="nav_selected">#FFFFFF</color>
+    <color name="content_sheet_bg">#F4F7FB</color>
+    <color name="success">#059669</color>
+    <color name="card_background">#FFFFFF</color>
+
+    <!-- Glossy Soft Pastel Light Gradient Backgrounds -->
+    <color name="bg_gradient_start">#F4F7FB</color>
+    <color name="bg_gradient_center">#F8FAFD</color>
+    <color name="bg_gradient_end">#FFFFFF</color>
+
+    <!-- Vibrant Glossy Button Gradients -->
+    <color name="btn_gradient_start">#6366F1</color>
+    <color name="btn_gradient_center">#4F46E5</color>
+    <color name="btn_gradient_end">#3730A3</color>
+
+    <color name="btn_emerald_start">#10B981</color>
+    <color name="btn_emerald_end">#059669</color>
+
+    <color name="btn_amber_start">#F59E0B</color>
+    <color name="btn_amber_end">#D97706</color>
+
+    <color name="btn_danger_start">#F43F5E</color>
+    <color name="btn_danger_end">#E11D48</color>
+
+    <!-- Glass & Surface Colors (Glossy Light Mode) -->
+    <color name="glass_card_bg">#FFFFFF</color>
+    <color name="glass_card_stroke">#E2E8F0</color>
+    <color name="glass_card_glow">#156366F1</color>
+    <color name="card_elevated_bg">#FFFFFF</color>
+
+    <color name="input_bg">#F8FAFC</color>
+    <color name="input_stroke">#CBD5E1</color>
+    <color name="input_stroke_focused">#6366F1</color>
+
+    <!-- Typography (High Contrast Light Mode) -->
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#475569</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="text_muted">#64748B</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status Pill Pastel Colors -->
+    <color name="statusActive">#059669</color>
+    <color name="statusActiveBg">#D1FAE5</color>
+    <color name="statusWarning">#D97706</color>
+    <color name="statusWarningBg">#FEF3C7</color>
+    <color name="statusInactive">#E11D48</color>
+    <color name="statusInactiveBg">#FFE4E6</color>
+
+    <!-- Utility & Sheen Colors -->
+    <color name="transparent">#00000000</color>
+    <color name="white_gloss_top">#E0FFFFFF</color>
+    <color name="white_gloss_bottom">#10FFFFFF</color>
+    <color name="divider_color">#E2E8F0</color>
+</resources>
