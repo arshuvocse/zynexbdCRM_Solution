@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.models
+package com.zynexbd.crmsolution.models
 
 import java.io.Serializable
 
@@ -130,7 +130,9 @@ data class CrmLead(
     val isActive: Boolean = true,
     val createdAtUtc: String = "",
     val officeLocationId: Int? = null,
-    val officeLocationName: String? = null
+    val officeLocationName: String? = null,
+    val followUpCount: Int = 0,
+    val managerName: String? = null
 ) : Serializable
 
 data class CrmLeadDetail(
@@ -164,7 +166,9 @@ data class CrmLeadDetail(
     val remarksHistory: List<CrmRemark> = emptyList(),
     val assignments: List<CrmLeadAssignment> = emptyList(),
     val statusHistory: List<CrmStatusHistory> = emptyList(),
-    val auditLog: List<CrmAuditLogEntry> = emptyList()
+    val auditLog: List<CrmAuditLogEntry> = emptyList(),
+    val followUpCount: Int = 0,
+    val managerName: String? = null
 ) : Serializable
 
 data class CrmFollowUp(
@@ -343,4 +347,127 @@ data class ManagerProductivity(
     val fromDate: String = "",
     val toDate: String = "",
     val items: List<EmployeeProductivityItem> = emptyList()
+) : Serializable
+
+// ==================== VISUAL CHARTS & DASHBOARD ANALYTICS ====================
+
+data class ChartDonutSlice(
+    val label: String = "",
+    val value: Double = 0.0,
+    val colorHex: String = "#3B82F6"
+) : Serializable
+
+data class ChartBarEntry(
+    val label: String = "",
+    val primaryValue: Double = 0.0,
+    val secondaryValue: Double = 0.0,
+    val category: String? = null
+) : Serializable
+
+data class ChartFunnelStage(
+    val stageName: String = "",
+    val stageCount: Int = 0,
+    val conversionPercent: Double = 0.0
+) : Serializable
+
+data class AdminCrmDashboardResponse(
+    val totalLeads: Int = 0,
+    val newLeads: Int = 0,
+    val followUpsToday: Int = 0,
+    val pendingFollowUps: Int = 0,
+    val overdueFollowUps: Int = 0,
+    val interestedLeads: Int = 0,
+    val notInterestedLeads: Int = 0,
+    val closedLeads: Int = 0,
+    val conversionRate: Double = 0.0,
+    val totalManagers: Int = 0,
+    val totalUsers: Int = 0,
+    val statusDistribution: List<ChartDonutSlice> = emptyList(),
+    val monthlyLeadTrend: List<ChartBarEntry> = emptyList(),
+    val followUpTrend: List<ChartBarEntry> = emptyList(),
+    val managerPerformance: List<ChartBarEntry> = emptyList(),
+    val userProductivity: List<ChartBarEntry> = emptyList(),
+    val productPerformance: List<ChartBarEntry> = emptyList(),
+    val sourceDistribution: List<ChartDonutSlice> = emptyList(),
+    val conversionFunnel: List<ChartFunnelStage> = emptyList()
+) : Serializable
+
+data class ManagerCrmDashboardResponse(
+    val teamLeads: Int = 0,
+    val newLeads: Int = 0,
+    val todayFollowUps: Int = 0,
+    val pendingFollowUps: Int = 0,
+    val overdueFollowUps: Int = 0,
+    val interestedLeads: Int = 0,
+    val closedLeads: Int = 0,
+    val conversionRate: Double = 0.0,
+    val kpiAchievement: Double = 0.0,
+    val teamLeadTrend: List<ChartBarEntry> = emptyList(),
+    val employeeProductivity: List<ChartBarEntry> = emptyList(),
+    val kpiAchievementBreakdown: List<ChartBarEntry> = emptyList(),
+    val statusDistribution: List<ChartDonutSlice> = emptyList(),
+    val followUpPerformance: List<ChartBarEntry> = emptyList(),
+    val productPerformance: List<ChartBarEntry> = emptyList(),
+    val sourceDistribution: List<ChartDonutSlice> = emptyList(),
+    val conversionFunnel: List<ChartFunnelStage> = emptyList()
+) : Serializable
+
+data class UserCrmDashboardResponse(
+    val myTotalLeads: Int = 0,
+    val myNewLeads: Int = 0,
+    val todayFollowUps: Int = 0,
+    val pendingFollowUps: Int = 0,
+    val overdueFollowUps: Int = 0,
+    val interestedLeads: Int = 0,
+    val closedLeads: Int = 0,
+    val dailyFollowUpTarget: Int = 0,
+    val dailyFollowUpAchieved: Int = 0,
+    val dailyAchievementPercent: Double = 0.0,
+    val weeklyFollowUpTarget: Int = 0,
+    val weeklyFollowUpAchieved: Int = 0,
+    val weeklyAchievementPercent: Double = 0.0,
+    val monthlyFollowUpTarget: Int = 0,
+    val monthlyFollowUpAchieved: Int = 0,
+    val monthlyAchievementPercent: Double = 0.0,
+    val myLeadStatus: List<ChartDonutSlice> = emptyList(),
+    val myLeadTrend: List<ChartBarEntry> = emptyList(),
+    val myFollowUpTrend: List<ChartBarEntry> = emptyList(),
+    val myKpiAchievement: List<ChartBarEntry> = emptyList(),
+    val myConversionFunnel: List<ChartFunnelStage> = emptyList()
+) : Serializable
+
+// ==================== ENTERPRISE CRM REPORTS ====================
+
+data class CrmReportSummary(
+    val totalRows: Int = 0,
+    val summary1Label: String = "",
+    val summary1Value: String = "",
+    val summary2Label: String = "",
+    val summary2Value: String = "",
+    val summary3Label: String = "",
+    val summary3Value: String = ""
+) : Serializable
+
+data class CrmReportRow(
+    val rowId: Int = 0,
+    val entityId: Int = 0,
+    val title: String = "",
+    val subtitle: String = "",
+    val tag: String = "",
+    val value1: String = "",
+    val value2: String = "",
+    val value3: String = "",
+    val value4: String = "",
+    val status: String = "",
+    val createdAtUtc: String? = null
+) : Serializable
+
+data class CrmReportResponse(
+    val reportType: Int = 1,
+    val reportTitle: String = "",
+    val summary: CrmReportSummary = CrmReportSummary(),
+    val rows: List<CrmReportRow> = emptyList(),
+    val pageNumber: Int = 1,
+    val pageSize: Int = 20,
+    val totalPages: Int = 1
 ) : Serializable

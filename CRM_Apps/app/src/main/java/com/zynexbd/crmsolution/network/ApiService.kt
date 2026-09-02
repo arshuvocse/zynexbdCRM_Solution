@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.network
+package com.zynexbd.crmsolution.network
 
 import com.zynexbd.crmsolution.models.*
 import okhttp3.MultipartBody
@@ -267,11 +267,98 @@ interface ApiService {
     ): Response<Unit>
 
     // ==========================================
+    // CRM ADMIN ENDPOINTS
+    // ==========================================
+
+    @GET("api/crm/admin/dashboard")
+    suspend fun getAdminCrmDashboard(
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("managerId") managerId: Int? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null
+    ): Response<AdminCrmDashboardResponse>
+
+    @GET("api/crm/admin/reports")
+    suspend fun getAdminCrmReports(
+        @Query("reportType") reportType: Int = 1,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("managerId") managerId: Int? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("pageNumber") pageNumber: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<CrmReportResponse>
+
+    @Streaming
+    @GET("api/crm/admin/reports/export")
+    suspend fun exportAdminCrmReport(
+        @Query("reportType") reportType: Int = 1,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("managerId") managerId: Int? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null,
+        @Query("search") search: String? = null
+    ): Response<ResponseBody>
+
+    // ==========================================
     // CRM MANAGER ENDPOINTS
     // ==========================================
 
     @GET("api/crm/manager/dashboard")
     suspend fun getCrmManagerDashboard(@Query("officeLocationId") officeLocationId: Int? = null): Response<ManagerCrmDashboard>
+
+    @GET("api/crm/manager/dashboard/analytics")
+    suspend fun getManagerCrmDashboardAnalytics(
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null
+    ): Response<ManagerCrmDashboardResponse>
+
+    @GET("api/crm/manager/reports")
+    suspend fun getManagerCrmReports(
+        @Query("reportType") reportType: Int = 1,
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("pageNumber") pageNumber: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<CrmReportResponse>
+
+    @Streaming
+    @GET("api/crm/manager/reports/export")
+    suspend fun exportManagerCrmReport(
+        @Query("reportType") reportType: Int = 1,
+        @Query("officeLocationId") officeLocationId: Int? = null,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null,
+        @Query("search") search: String? = null
+    ): Response<ResponseBody>
 
     @GET("api/crm/manager/leads")
     suspend fun getCrmManagerLeads(
@@ -387,6 +474,28 @@ interface ApiService {
     @GET("api/crm/user/dashboard")
     suspend fun getCrmUserDashboard(): Response<UserCrmDashboard>
 
+    @GET("api/crm/user/dashboard/analytics")
+    suspend fun getUserCrmDashboardAnalytics(
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null
+    ): Response<UserCrmDashboardResponse>
+
+    @GET("api/crm/user/reports")
+    suspend fun getUserCrmReports(
+        @Query("reportType") reportType: Int = 1,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("productServiceId") productServiceId: Int? = null,
+        @Query("leadStatus") leadStatus: String? = null,
+        @Query("leadSourceId") leadSourceId: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("pageNumber") pageNumber: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<CrmReportResponse>
+
     @GET("api/crm/user/leads")
     suspend fun getCrmUserLeads(
         @Query("status") status: String? = null,
@@ -417,7 +526,11 @@ interface ApiService {
     suspend fun addCrmRemark(@Path("id") id: Int, @Body request: CreateRemarkRequest): Response<CrmRemark>
 
     @GET("api/crm/user/followups")
-    suspend fun getCrmUserFollowUps(@Query("filterType") filterType: String? = null): Response<List<CrmFollowUpItem>>
+    suspend fun getCrmUserFollowUps(
+        @Query("filterType") filterType: String? = null,
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null
+    ): Response<List<CrmFollowUpItem>>
 
     @GET("api/crm/user/kpi")
     suspend fun getCrmUserKpiPerformance(): Response<List<UserKpiPerformance>>

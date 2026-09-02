@@ -6,7 +6,7 @@
     <string name="app_tagline">বাংলাদেশের নিজস্ব স্মার্ট এন্টারপ্রাইজ সিআরএম</string>
     <string name="greeting_salam">আসসালামু আলাইকুম</string>
     <string name="welcome_to_your">স্বাগতম আপনার</string>
-    <string name="digital_workspace">ডিজিটাল ওয়ার্কস্পেসে</string>
+    <string name="digital_workspace">DeshiCRM</string>
 
     <!-- General Common Actions -->
     <string name="action_save">সংরক্ষণ করুন</string>

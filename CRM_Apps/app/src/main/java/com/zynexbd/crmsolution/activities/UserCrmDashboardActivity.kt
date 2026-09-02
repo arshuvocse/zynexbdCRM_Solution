@@ -1,17 +1,29 @@
 package com.zynexbd.crmsolution.activities
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.zynexbd.crmsolution.R
+import com.google.android.material.tabs.TabLayout
 import com.zynexbd.crmsolution.databinding.ActivityUserCrmDashboardBinding
+import com.zynexbd.crmsolution.models.ChartBarEntry
+import com.zynexbd.crmsolution.models.ChartDonutSlice
 import com.zynexbd.crmsolution.viewmodel.CrmViewModel
+import com.zynexbd.crmsolution.views.BarChartView
+import com.zynexbd.crmsolution.views.DonutChartView
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class UserCrmDashboardActivity : BaseActivity() {
 
     private lateinit var binding: ActivityUserCrmDashboardBinding
     private lateinit var viewModel: CrmViewModel
+
+    private var fromDateStr: String? = null
+    private var toDateStr: String? = null
+    private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,24 +33,22 @@ class UserCrmDashboardActivity : BaseActivity() {
         viewModel = ViewModelProvider(this)[CrmViewModel::class.java]
 
         setupUI()
+        setupDateFilters()
         observeViewModel()
 
-        viewModel.loadUserDashboard()
+        loadDashboard()
     }
 
     private fun setupUI() {
         binding.buttonBack.setOnClickListener { finish() }
+        binding.buttonRefresh.setOnClickListener { loadDashboard() }
+        binding.swipeRefresh.setOnRefreshListener { loadDashboard() }
 
-        binding.buttonRefresh.setOnClickListener {
-            viewModel.loadUserDashboard()
-        }
-
-        binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadUserDashboard()
-        }
-
-        // Quick Navigation Buttons
         binding.buttonMyLeads.setOnClickListener {
+            startActivity(Intent(this, UserCrmLeadListActivity::class.java))
+        }
+
+        binding.cardTotalLeads.setOnClickListener {
             startActivity(Intent(this, UserCrmLeadListActivity::class.java))
         }
 
@@ -52,14 +62,14 @@ class UserCrmDashboardActivity : BaseActivity() {
             startActivity(Intent(this, UserCrmFollowUpsActivity::class.java))
         }
 
-        binding.cardTotalLeads.setOnClickListener {
-            startActivity(Intent(this, UserCrmLeadListActivity::class.java))
-        }
-
         binding.cardTodayFollowUps.setOnClickListener {
             startActivity(Intent(this, UserCrmFollowUpsActivity::class.java).apply {
                 putExtra("INITIAL_FILTER", "today")
             })
+        }
+
+        binding.buttonMyReports.setOnClickListener {
+            startActivity(Intent(this, UserCrmReportsActivity::class.java))
         }
 
         binding.buttonViewFullKpi.setOnClickListener {
@@ -67,66 +77,119 @@ class UserCrmDashboardActivity : BaseActivity() {
         }
     }
 
+    private fun setupDateFilters() {
+        binding.tabLayoutDateFilters.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val cal = Calendar.getInstance()
+                val now = cal.time
+                when (tab?.position) {
+                    0 -> { // Today
+                        cal.set(Calendar.HOUR_OF_DAY, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                        cal.set(Calendar.SECOND, 0)
+                        fromDateStr = isoFormat.format(cal.time)
+                        toDateStr = isoFormat.format(now)
+                    }
+                    1 -> { // This Week
+                        cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
+                        cal.set(Calendar.HOUR_OF_DAY, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                        cal.set(Calendar.SECOND, 0)
+                        fromDateStr = isoFormat.format(cal.time)
+                        toDateStr = isoFormat.format(now)
+                    }
+                    2 -> { // This Month
+                        cal.set(Calendar.DAY_OF_MONTH, 1)
+                        cal.set(Calendar.HOUR_OF_DAY, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                        cal.set(Calendar.SECOND, 0)
+                        fromDateStr = isoFormat.format(cal.time)
+                        toDateStr = isoFormat.format(now)
+                    }
+                    3 -> { // All Time
+                        fromDateStr = null
+                        toDateStr = null
+                    }
+                }
+                loadDashboard()
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
+    private fun loadDashboard() {
+        binding.swipeRefresh.isRefreshing = true
+        viewModel.loadUserCrmDashboardAnalytics(
+            fromDate = fromDateStr,
+            toDate = toDateStr
+        )
+    }
+
     private fun observeViewModel() {
-        viewModel.isLoading.observe(this) { loading ->
-            binding.swipeRefresh.isRefreshing = loading
-        }
+        viewModel.userCrmDashboardAnalytics.observe(this) { data ->
+            binding.swipeRefresh.isRefreshing = false
+            if (data == null) return@observe
 
-        viewModel.errorMessage.observe(this) { msg ->
-            if (!msg.isNullOrBlank()) {
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+            // 10 Summary Cards
+            binding.textMyTotalLeads.text = data.myTotalLeads.toString()
+            binding.textNewLeads.text = data.myNewLeads.toString()
+            binding.textTodayFollowUps.text = data.todayFollowUps.toString()
+            binding.textPendingFollowUps.text = data.pendingFollowUps.toString()
+            binding.textOverdueFollowUps.text = data.overdueFollowUps.toString()
+            binding.textInterestedLeads.text = data.interestedLeads.toString()
+            binding.textClosedLeads.text = data.closedLeads.toString()
+            binding.textDailyTarget.text = data.dailyFollowUpTarget.toString()
+            binding.textDailyAchieved.text = data.dailyFollowUpAchieved.toString()
+
+            // 5 Visual Charts
+            // 1. Funnel
+            binding.chartConversionFunnel.setData(data.myConversionFunnel)
+
+            // 2. Status Distribution Donut
+            val statusSlices = data.myLeadStatus.map {
+                DonutChartView.Slice(
+                    label = it.label,
+                    value = it.value.toFloat(),
+                    color = safeParseColor(it.colorHex, Color.parseColor("#3B82F6"))
+                )
             }
+            binding.chartStatusDistribution.setData(statusSlices, "${data.myTotalLeads}", "My Leads")
+            binding.textStatusLegend.text = data.myLeadStatus.joinToString(" • ") { "${it.label}: ${it.value.toInt()}" }
+
+            // 3. Monthly Trend
+            val trendBars = data.myLeadTrend.map {
+                BarChartView.BarEntry(it.label, it.primaryValue.toFloat(), it.secondaryValue.toFloat())
+            }
+            binding.chartMyLeadTrend.setData(trendBars)
+
+            // 4. Follow-up Trend
+            val followUpBars = data.myFollowUpTrend.map {
+                BarChartView.BarEntry(it.label, it.primaryValue.toFloat(), it.secondaryValue.toFloat())
+            }
+            binding.chartMyFollowUpTrend.setData(followUpBars)
+
+            // 5. KPI Achievement
+            val kpiBars = data.myKpiAchievement.map {
+                BarChartView.BarEntry(it.label, it.primaryValue.toFloat(), it.secondaryValue.toFloat())
+            }
+            binding.chartMyKpiAchievement.setData(kpiBars)
         }
 
-        viewModel.userDashboard.observe(this) { data ->
-            if (data != null) {
-                binding.textMyTotalLeads.text = data.myTotalLeads.toString()
-                binding.textTodayFollowUps.text = data.todayFollowUps.toString()
-                binding.textNewLeads.text = data.newLeads.toString()
-                binding.textFollowUpLeads.text = data.followUpLeads.toString()
-                binding.textInterestedLeads.text = data.interestedLeads.toString()
-                binding.textClosedLeads.text = data.closedLeads.toString()
-
-                // Daily Progress
-                val dailyPct = data.dailyAchievementPercent
-                binding.textDailyPercent.text = "${dailyPct}%"
-                binding.progressDaily.progress = dailyPct.toInt().coerceIn(0, 100)
-                binding.textDailyProgressText.text = "Follow-up Done: ${data.dailyFollowUpAchieved} / ${data.dailyFollowUpTarget}"
-                applyBadgeStyle(binding.textDailyPercent, dailyPct)
-
-                // Weekly Progress
-                val weeklyPct = data.weeklyAchievementPercent
-                binding.textWeeklyPercent.text = "${weeklyPct}%"
-                binding.progressWeekly.progress = weeklyPct.toInt().coerceIn(0, 100)
-                binding.textWeeklyProgressText.text = "Follow-up Done: ${data.weeklyFollowUpAchieved} / ${data.weeklyFollowUpTarget}"
-                applyBadgeStyle(binding.textWeeklyPercent, weeklyPct)
+        viewModel.errorMessage.observe(this) { err ->
+            if (!err.isNullOrBlank()) {
+                binding.swipeRefresh.isRefreshing = false
+                Toast.makeText(this, err, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun applyBadgeStyle(textView: android.widget.TextView, percent: Double) {
-        when {
-            percent >= 100.0 -> {
-                textView.background = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_badge_success)
-                textView.setTextColor(android.graphics.Color.WHITE)
-            }
-            percent >= 50.0 -> {
-                textView.background = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_badge_primary)
-                textView.setTextColor(android.graphics.Color.WHITE)
-            }
-            percent > 0.0 -> {
-                textView.background = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_badge_warning)
-                textView.setTextColor(android.graphics.Color.WHITE)
-            }
-            else -> {
-                textView.background = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_badge_slate)
-                textView.setTextColor(android.graphics.Color.parseColor("#475569"))
-            }
+    private fun safeParseColor(hex: String?, defaultColor: Int): Int {
+        if (hex.isNullOrBlank()) return defaultColor
+        return try {
+            Color.parseColor(hex)
+        } catch (e: Exception) {
+            defaultColor
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.loadUserDashboard()
     }
 }

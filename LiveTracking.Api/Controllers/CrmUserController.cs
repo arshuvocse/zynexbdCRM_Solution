@@ -67,6 +67,60 @@ public class CrmUserController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Returns the complete User CRM Dashboard with 10 Cards + 5 Visual Charts
+    /// </summary>
+    [HttpGet("dashboard/analytics")]
+    public async Task<ActionResult<UserCrmDashboardResponse>> GetDashboardAnalytics(
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] int? productServiceId = null,
+        [FromQuery] string? leadStatus = null,
+        [FromQuery] int? leadSourceId = null)
+    {
+        int userId = GetCurrentUserId();
+        if (userId <= 0) return Unauthorized();
+
+        int companyId = await GetCurrentCompanyIdAsync();
+        if (companyId <= 0) return Forbid();
+
+        var filters = new CrmDashboardFilterRequest(fromDate, toDate, null, null, userId, productServiceId, leadStatus, leadSourceId);
+        var result = await _crm.GetUserCrmDashboardAsync(companyId, userId, filters);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns paginated User CRM Reports (13 Reports) strictly scoped to caller
+    /// </summary>
+    [HttpGet("reports")]
+    public async Task<ActionResult<CrmReportResponse>> GetMyReports(
+        [FromQuery] int reportType = 1,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] int? productServiceId = null,
+        [FromQuery] string? leadStatus = null,
+        [FromQuery] int? leadSourceId = null,
+        [FromQuery] string? search = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        int userId = GetCurrentUserId();
+        if (userId <= 0) return Unauthorized();
+
+        int companyId = await GetCurrentCompanyIdAsync();
+        if (companyId <= 0) return Forbid();
+
+        if (reportType < 1 || reportType > 13) reportType = 1;
+
+        var request = new CrmReportFilterRequest(
+            reportType, fromDate, toDate, null, null, userId,
+            productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
+        );
+
+        var result = await _crm.GetUserReportAsync(companyId, userId, request);
+        return Ok(result);
+    }
+
     [HttpGet("leads")]
     public async Task<ActionResult<PagedResult<CrmLeadResponse>>> GetMyLeads(
         [FromQuery] string? status = null,
@@ -184,7 +238,10 @@ public class CrmUserController : ControllerBase
     }
 
     [HttpGet("followups")]
-    public async Task<ActionResult<List<CrmFollowUpItemDto>>> GetMyFollowUps([FromQuery] string? filterType = null)
+    public async Task<ActionResult<List<CrmFollowUpItemDto>>> GetMyFollowUps(
+        [FromQuery] string? filterType = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null)
     {
         int userId = GetCurrentUserId();
         if (userId <= 0) return Unauthorized();
@@ -192,7 +249,7 @@ public class CrmUserController : ControllerBase
         int companyId = await GetCurrentCompanyIdAsync();
         if (companyId <= 0) return Forbid();
 
-        var result = await _crm.GetUserFollowUpsAsync(companyId, userId, filterType);
+        var result = await _crm.GetUserFollowUpsAsync(companyId, userId, filterType, fromDate, toDate);
         return Ok(result);
     }
 

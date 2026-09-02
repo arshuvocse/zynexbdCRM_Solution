@@ -89,6 +89,10 @@
         <activity android:name=".activities.AdminCrmKpiActivity" android:exported="false" />
         <activity android:name=".activities.UserCrmKpiActivity" android:exported="false" />
         <activity android:name=".activities.AdminCrmProductivityActivity" android:exported="false" />
+        <activity android:name=".activities.ManagerCrmDashboardActivity" android:exported="false" />
+        <activity android:name=".activities.AdminCrmReportsActivity" android:exported="false" />
+        <activity android:name=".activities.ManagerCrmReportsActivity" android:exported="false" />
+        <activity android:name=".activities.UserCrmReportsActivity" android:exported="false" />
 
         <service
             android:name=".services.TrackingForegroundService"

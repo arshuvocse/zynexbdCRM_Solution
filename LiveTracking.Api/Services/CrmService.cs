@@ -1,3 +1,6 @@
+using System.Data;
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
 using LiveTracking.Api.Data;
 using LiveTracking.Api.DTOs;
 using LiveTracking.Api.Models.CRM;
@@ -1364,7 +1367,7 @@ public class CrmService : ICrmService
         );
     }
 
-    public async Task<List<CrmFollowUpItemDto>> GetUserFollowUpsAsync(int companyId, int userId, string? filterType = null)
+    public async Task<List<CrmFollowUpItemDto>> GetUserFollowUpsAsync(int companyId, int userId, string? filterType = null, DateTime? fromDate = null, DateTime? toDate = null)
     {
         var now = DateTime.UtcNow;
         var todayStart = now.Date;
@@ -1383,11 +1386,27 @@ public class CrmService : ICrmService
             case "today":
                 query = query.Where(l => l.NextFollowUpDate >= todayStart && l.NextFollowUpDate < todayEnd);
                 break;
+            case "tomorrow":
+                query = query.Where(l => l.NextFollowUpDate >= todayEnd && l.NextFollowUpDate < todayEnd.AddDays(1));
+                break;
             case "overdue":
                 query = query.Where(l => l.NextFollowUpDate < todayStart);
                 break;
             case "upcoming":
                 query = query.Where(l => l.NextFollowUpDate >= todayEnd);
+                break;
+            case "next7days":
+                query = query.Where(l => l.NextFollowUpDate >= todayStart && l.NextFollowUpDate < todayStart.AddDays(7));
+                break;
+            case "next15days":
+                query = query.Where(l => l.NextFollowUpDate >= todayStart && l.NextFollowUpDate < todayStart.AddDays(15));
+                break;
+            case "next30days":
+                query = query.Where(l => l.NextFollowUpDate >= todayStart && l.NextFollowUpDate < todayStart.AddDays(30));
+                break;
+            case "custom":
+                if (fromDate.HasValue) query = query.Where(l => l.NextFollowUpDate >= fromDate.Value);
+                if (toDate.HasValue) query = query.Where(l => l.NextFollowUpDate <= toDate.Value);
                 break;
         }
 
@@ -1623,4 +1642,616 @@ public class CrmService : ICrmService
     }
 
     #endregion
+
+    #region Enterprise Dashboard & Reporting Stored Procedures
+
+    private static object DbVal(object? val) => val ?? DBNull.Value;
+
+    private static double ReadDouble(DbDataReader r, int col)
+    {
+        if (r.IsDBNull(col)) return 0.0;
+        var val = r.GetValue(col);
+        return Convert.ToDouble(val);
+    }
+
+    private static int ReadInt(DbDataReader r, int col)
+    {
+        if (r.IsDBNull(col)) return 0;
+        var val = r.GetValue(col);
+        return Convert.ToInt32(val);
+    }
+
+    private static string GetAdminReportTitle(int type) => type switch
+    {
+        1 => "Company Lead Summary",
+        2 => "Office Location-wise Lead Report",
+        3 => "Manager-wise Lead Report",
+        4 => "User-wise Lead Report",
+        5 => "Product/Service-wise Lead Report",
+        6 => "Lead Source-wise Report",
+        7 => "Lead Status Report",
+        8 => "Follow-up Summary",
+        9 => "Overdue Follow-up Report",
+        10 => "KPI Summary",
+        11 => "Employee Productivity",
+        12 => "Conversion Report",
+        13 => "Daily Lead Trend",
+        14 => "Weekly Lead Trend",
+        15 => "Monthly Lead Trend",
+        _ => "CRM Report"
+    };
+
+    private static string GetManagerReportTitle(int type) => type switch
+    {
+        1 => "Team Lead Summary",
+        2 => "Employee-wise Lead Report",
+        3 => "Employee Productivity Report",
+        4 => "Employee KPI Report",
+        5 => "Follow-up Performance",
+        6 => "Overdue Follow-up Report",
+        7 => "Lead Status Report",
+        8 => "Product/Service Performance",
+        9 => "Lead Source Performance",
+        10 => "Conversion Report",
+        11 => "Daily Performance",
+        12 => "Weekly Performance",
+        13 => "Monthly Performance",
+        _ => "Team CRM Report"
+    };
+
+    private static string GetUserReportTitle(int type) => type switch
+    {
+        1 => "My Lead Summary",
+        2 => "My Lead Status",
+        3 => "My Follow-up Report",
+        4 => "My Overdue Follow-ups",
+        5 => "My KPI Report",
+        6 => "My KPI Achievement",
+        7 => "My Productivity",
+        8 => "My Product/Service-wise Leads",
+        9 => "My Lead Source-wise Leads",
+        10 => "My Conversion Performance",
+        11 => "Daily Performance",
+        12 => "Weekly Performance",
+        13 => "Monthly Performance",
+        _ => "My CRM Report"
+    };
+
+    public async Task<AdminCrmDashboardResponse> GetAdminDashboardAsync(int companyId, CrmDashboardFilterRequest filters)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetAdminDashboard";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(filters.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(filters.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@OfficeLocationId", DbVal(filters.OfficeLocationId)));
+        cmd.Parameters.Add(new SqlParameter("@ManagerId", DbVal(filters.ManagerId)));
+        cmd.Parameters.Add(new SqlParameter("@UserId", DbVal(filters.UserId)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(filters.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(filters.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(filters.LeadSourceId)));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        int totalLeads = 0, newLeads = 0, followUpsToday = 0, pendingFollowUps = 0, overdueFollowUps = 0;
+        int interestedLeads = 0, notInterestedLeads = 0, closedLeads = 0, totalManagers = 0, totalUsers = 0;
+        double conversionRate = 0;
+
+        if (await reader.ReadAsync())
+        {
+            totalLeads = ReadInt(reader, 0);
+            newLeads = ReadInt(reader, 1);
+            followUpsToday = ReadInt(reader, 2);
+            pendingFollowUps = ReadInt(reader, 3);
+            overdueFollowUps = ReadInt(reader, 4);
+            interestedLeads = ReadInt(reader, 5);
+            notInterestedLeads = ReadInt(reader, 6);
+            closedLeads = ReadInt(reader, 7);
+            conversionRate = ReadDouble(reader, 8);
+            totalManagers = ReadInt(reader, 9);
+            totalUsers = ReadInt(reader, 10);
+        }
+
+        var statusDist = new List<ChartDonutSliceDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                statusDist.Add(new ChartDonutSliceDto(reader.GetString(0), ReadDouble(reader, 1), reader.GetString(2)));
+            }
+        }
+
+        var monthlyTrend = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                monthlyTrend.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var followUpTrend = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                followUpTrend.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var managerPerf = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                managerPerf.Add(new ChartBarEntryDto(reader.GetString(1), ReadDouble(reader, 2), ReadDouble(reader, 3)));
+            }
+        }
+
+        var userProd = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                userProd.Add(new ChartBarEntryDto(reader.GetString(1), ReadDouble(reader, 2), ReadDouble(reader, 3)));
+            }
+        }
+
+        var prodPerf = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                prodPerf.Add(new ChartBarEntryDto(reader.GetString(1), ReadDouble(reader, 2), ReadDouble(reader, 3)));
+            }
+        }
+
+        var sourceDist = new List<ChartDonutSliceDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                sourceDist.Add(new ChartDonutSliceDto(reader.GetString(0), ReadDouble(reader, 1), reader.GetString(2)));
+            }
+        }
+
+        var funnel = new List<ChartFunnelStageDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                funnel.Add(new ChartFunnelStageDto(reader.GetString(0), ReadInt(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        return new AdminCrmDashboardResponse(
+            totalLeads, newLeads, followUpsToday, pendingFollowUps, overdueFollowUps,
+            interestedLeads, notInterestedLeads, closedLeads, conversionRate,
+            totalManagers, totalUsers,
+            statusDist, monthlyTrend, followUpTrend, managerPerf,
+            userProd, prodPerf, sourceDist, funnel
+        );
+    }
+
+    public async Task<ManagerCrmDashboardResponse> GetManagerCrmDashboardAsync(int companyId, int managerUserId, CrmOfficeScope officeScope, CrmDashboardFilterRequest filters)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetManagerDashboard";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@ManagerUserId", managerUserId));
+        cmd.Parameters.Add(new SqlParameter("@OfficeLocationId", DbVal(filters.OfficeLocationId)));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(filters.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(filters.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@UserId", DbVal(filters.UserId)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(filters.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(filters.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(filters.LeadSourceId)));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        int teamLeads = 0, newLeads = 0, todayFollowUps = 0, pendingFollowUps = 0, overdueFollowUps = 0;
+        int interestedLeads = 0, closedLeads = 0;
+        double conversionRate = 0, kpiAchievement = 0;
+
+        if (await reader.ReadAsync())
+        {
+            teamLeads = ReadInt(reader, 0);
+            newLeads = ReadInt(reader, 1);
+            todayFollowUps = ReadInt(reader, 2);
+            pendingFollowUps = ReadInt(reader, 3);
+            overdueFollowUps = ReadInt(reader, 4);
+            interestedLeads = ReadInt(reader, 5);
+            closedLeads = ReadInt(reader, 6);
+            conversionRate = ReadDouble(reader, 7);
+            kpiAchievement = ReadDouble(reader, 8);
+        }
+
+        var teamLeadTrend = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                teamLeadTrend.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var empProd = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                empProd.Add(new ChartBarEntryDto(reader.GetString(1), ReadDouble(reader, 2), ReadDouble(reader, 3)));
+            }
+        }
+
+        var kpiBreakdown = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                kpiBreakdown.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var statusDist = new List<ChartDonutSliceDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                statusDist.Add(new ChartDonutSliceDto(reader.GetString(0), ReadDouble(reader, 1), reader.GetString(2)));
+            }
+        }
+
+        var followUpPerf = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                followUpPerf.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var prodPerf = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                prodPerf.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var sourceDist = new List<ChartDonutSliceDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                sourceDist.Add(new ChartDonutSliceDto(reader.GetString(0), ReadDouble(reader, 1), reader.GetString(2)));
+            }
+        }
+
+        var funnel = new List<ChartFunnelStageDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                funnel.Add(new ChartFunnelStageDto(reader.GetString(0), ReadInt(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        return new ManagerCrmDashboardResponse(
+            teamLeads, newLeads, todayFollowUps, pendingFollowUps, overdueFollowUps,
+            interestedLeads, closedLeads, conversionRate, kpiAchievement,
+            teamLeadTrend, empProd, kpiBreakdown, statusDist,
+            followUpPerf, prodPerf, sourceDist, funnel
+        );
+    }
+
+    public async Task<UserCrmDashboardResponse> GetUserCrmDashboardAsync(int companyId, int userId, CrmDashboardFilterRequest filters)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetUserDashboard";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@UserId", userId));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(filters.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(filters.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(filters.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(filters.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(filters.LeadSourceId)));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        int myTotalLeads = 0, myNewLeads = 0, todayFollowUps = 0, pendingFollowUps = 0, overdueFollowUps = 0;
+        int interestedLeads = 0, closedLeads = 0;
+        int dailyTarget = 30, dailyAchieved = 0; double dailyPercent = 0;
+        int weeklyTarget = 150, weeklyAchieved = 0; double weeklyPercent = 0;
+        int monthlyTarget = 600, monthlyAchieved = 0; double monthlyPercent = 0;
+
+        if (await reader.ReadAsync())
+        {
+            myTotalLeads = ReadInt(reader, 0);
+            myNewLeads = ReadInt(reader, 1);
+            todayFollowUps = ReadInt(reader, 2);
+            pendingFollowUps = ReadInt(reader, 3);
+            overdueFollowUps = ReadInt(reader, 4);
+            interestedLeads = ReadInt(reader, 5);
+            closedLeads = ReadInt(reader, 6);
+
+            dailyTarget = ReadInt(reader, 7);
+            dailyAchieved = ReadInt(reader, 8);
+            dailyPercent = ReadDouble(reader, 9);
+
+            weeklyTarget = ReadInt(reader, 10);
+            weeklyAchieved = ReadInt(reader, 11);
+            weeklyPercent = ReadDouble(reader, 12);
+
+            monthlyTarget = ReadInt(reader, 13);
+            monthlyAchieved = ReadInt(reader, 14);
+            monthlyPercent = ReadDouble(reader, 15);
+        }
+
+        var statusDist = new List<ChartDonutSliceDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                statusDist.Add(new ChartDonutSliceDto(reader.GetString(0), ReadDouble(reader, 1), reader.GetString(2)));
+            }
+        }
+
+        var leadTrend = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                leadTrend.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var followUpTrend = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                followUpTrend.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var kpiPerf = new List<ChartBarEntryDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                kpiPerf.Add(new ChartBarEntryDto(reader.GetString(0), ReadDouble(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        var funnel = new List<ChartFunnelStageDto>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                funnel.Add(new ChartFunnelStageDto(reader.GetString(0), ReadInt(reader, 1), ReadDouble(reader, 2)));
+            }
+        }
+
+        return new UserCrmDashboardResponse(
+            myTotalLeads, myNewLeads, todayFollowUps, pendingFollowUps, overdueFollowUps,
+            interestedLeads, closedLeads,
+            dailyTarget, dailyAchieved, dailyPercent,
+            weeklyTarget, weeklyAchieved, weeklyPercent,
+            monthlyTarget, monthlyAchieved, monthlyPercent,
+            statusDist, leadTrend, followUpTrend, kpiPerf, funnel
+        );
+    }
+
+    public async Task<CrmReportResponse> GetAdminReportAsync(int companyId, CrmReportFilterRequest request)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetAdminReports";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@ReportType", request.ReportType));
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(request.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(request.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@OfficeLocationId", DbVal(request.OfficeLocationId)));
+        cmd.Parameters.Add(new SqlParameter("@ManagerId", DbVal(request.ManagerId)));
+        cmd.Parameters.Add(new SqlParameter("@UserId", DbVal(request.UserId)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(request.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(request.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(request.LeadSourceId)));
+        cmd.Parameters.Add(new SqlParameter("@Search", DbVal(request.Search)));
+        cmd.Parameters.Add(new SqlParameter("@PageNumber", request.PageNumber));
+        cmd.Parameters.Add(new SqlParameter("@PageSize", request.PageSize));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var summary = new CrmReportSummary(0, "Total", "0", "Closed", "0", "Conversion", "0%");
+        if (await reader.ReadAsync())
+        {
+            summary = new CrmReportSummary(
+                ReadInt(reader, 0),
+                reader.IsDBNull(1) ? "Metric 1" : reader.GetString(1),
+                reader.IsDBNull(2) ? "0" : reader.GetString(2),
+                reader.IsDBNull(3) ? "Metric 2" : reader.GetString(3),
+                reader.IsDBNull(4) ? "0" : reader.GetString(4),
+                reader.IsDBNull(5) ? "Metric 3" : reader.GetString(5),
+                reader.IsDBNull(6) ? "0" : reader.GetString(6)
+            );
+        }
+
+        var rows = new List<CrmReportRow>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                rows.Add(new CrmReportRow(
+                    ReadInt(reader, 0),
+                    ReadInt(reader, 1),
+                    reader.IsDBNull(2) ? "" : reader.GetString(2),
+                    reader.IsDBNull(3) ? "" : reader.GetString(3),
+                    reader.IsDBNull(4) ? "" : reader.GetString(4),
+                    reader.IsDBNull(5) ? "" : reader.GetString(5),
+                    reader.IsDBNull(6) ? "" : reader.GetString(6),
+                    reader.IsDBNull(7) ? "" : reader.GetString(7),
+                    reader.IsDBNull(8) ? "" : reader.GetString(8),
+                    reader.IsDBNull(9) ? "" : reader.GetString(9),
+                    reader.IsDBNull(10) ? null : reader.GetDateTime(10)
+                ));
+            }
+        }
+
+        string reportTitle = GetAdminReportTitle(request.ReportType);
+        int totalPages = (int)Math.Ceiling((double)summary.TotalRows / request.PageSize);
+        if (totalPages < 1) totalPages = 1;
+
+        return new CrmReportResponse(request.ReportType, reportTitle, summary, rows, request.PageNumber, request.PageSize, totalPages);
+    }
+
+    public async Task<CrmReportResponse> GetManagerReportAsync(int companyId, int managerUserId, CrmOfficeScope officeScope, CrmReportFilterRequest request)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetManagerReports";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@ReportType", request.ReportType));
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@ManagerUserId", managerUserId));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(request.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(request.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@OfficeLocationId", DbVal(request.OfficeLocationId)));
+        cmd.Parameters.Add(new SqlParameter("@UserId", DbVal(request.UserId)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(request.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(request.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(request.LeadSourceId)));
+        cmd.Parameters.Add(new SqlParameter("@Search", DbVal(request.Search)));
+        cmd.Parameters.Add(new SqlParameter("@PageNumber", request.PageNumber));
+        cmd.Parameters.Add(new SqlParameter("@PageSize", request.PageSize));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var summary = new CrmReportSummary(0, "Total", "0", "Closed", "0", "Conversion", "0%");
+        if (await reader.ReadAsync())
+        {
+            summary = new CrmReportSummary(
+                ReadInt(reader, 0),
+                reader.IsDBNull(1) ? "Metric 1" : reader.GetString(1),
+                reader.IsDBNull(2) ? "0" : reader.GetString(2),
+                reader.IsDBNull(3) ? "Metric 2" : reader.GetString(3),
+                reader.IsDBNull(4) ? "0" : reader.GetString(4),
+                reader.IsDBNull(5) ? "Metric 3" : reader.GetString(5),
+                reader.IsDBNull(6) ? "0" : reader.GetString(6)
+            );
+        }
+
+        var rows = new List<CrmReportRow>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                rows.Add(new CrmReportRow(
+                    ReadInt(reader, 0),
+                    ReadInt(reader, 1),
+                    reader.IsDBNull(2) ? "" : reader.GetString(2),
+                    reader.IsDBNull(3) ? "" : reader.GetString(3),
+                    reader.IsDBNull(4) ? "" : reader.GetString(4),
+                    reader.IsDBNull(5) ? "" : reader.GetString(5),
+                    reader.IsDBNull(6) ? "" : reader.GetString(6),
+                    reader.IsDBNull(7) ? "" : reader.GetString(7),
+                    reader.IsDBNull(8) ? "" : reader.GetString(8),
+                    reader.IsDBNull(9) ? "" : reader.GetString(9),
+                    reader.IsDBNull(10) ? null : reader.GetDateTime(10)
+                ));
+            }
+        }
+
+        string reportTitle = GetManagerReportTitle(request.ReportType);
+        int totalPages = (int)Math.Ceiling((double)summary.TotalRows / request.PageSize);
+        if (totalPages < 1) totalPages = 1;
+
+        return new CrmReportResponse(request.ReportType, reportTitle, summary, rows, request.PageNumber, request.PageSize, totalPages);
+    }
+
+    public async Task<CrmReportResponse> GetUserReportAsync(int companyId, int userId, CrmReportFilterRequest request)
+    {
+        var conn = _db.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "dbo.sp_Crm_GetUserReports";
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.Add(new SqlParameter("@ReportType", request.ReportType));
+        cmd.Parameters.Add(new SqlParameter("@CompanyId", companyId));
+        cmd.Parameters.Add(new SqlParameter("@UserId", userId));
+        cmd.Parameters.Add(new SqlParameter("@FromDate", DbVal(request.FromDate)));
+        cmd.Parameters.Add(new SqlParameter("@ToDate", DbVal(request.ToDate)));
+        cmd.Parameters.Add(new SqlParameter("@ProductServiceId", DbVal(request.ProductServiceId)));
+        cmd.Parameters.Add(new SqlParameter("@LeadStatus", DbVal(request.LeadStatus)));
+        cmd.Parameters.Add(new SqlParameter("@LeadSourceId", DbVal(request.LeadSourceId)));
+        cmd.Parameters.Add(new SqlParameter("@Search", DbVal(request.Search)));
+        cmd.Parameters.Add(new SqlParameter("@PageNumber", request.PageNumber));
+        cmd.Parameters.Add(new SqlParameter("@PageSize", request.PageSize));
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var summary = new CrmReportSummary(0, "Total", "0", "Closed", "0", "Conversion", "0%");
+        if (await reader.ReadAsync())
+        {
+            summary = new CrmReportSummary(
+                ReadInt(reader, 0),
+                reader.IsDBNull(1) ? "Metric 1" : reader.GetString(1),
+                reader.IsDBNull(2) ? "0" : reader.GetString(2),
+                reader.IsDBNull(3) ? "Metric 2" : reader.GetString(3),
+                reader.IsDBNull(4) ? "0" : reader.GetString(4),
+                reader.IsDBNull(5) ? "Metric 3" : reader.GetString(5),
+                reader.IsDBNull(6) ? "0" : reader.GetString(6)
+            );
+        }
+
+        var rows = new List<CrmReportRow>();
+        if (await reader.NextResultAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                rows.Add(new CrmReportRow(
+                    ReadInt(reader, 0),
+                    ReadInt(reader, 1),
+                    reader.IsDBNull(2) ? "" : reader.GetString(2),
+                    reader.IsDBNull(3) ? "" : reader.GetString(3),
+                    reader.IsDBNull(4) ? "" : reader.GetString(4),
+                    reader.IsDBNull(5) ? "" : reader.GetString(5),
+                    reader.IsDBNull(6) ? "" : reader.GetString(6),
+                    reader.IsDBNull(7) ? "" : reader.GetString(7),
+                    reader.IsDBNull(8) ? "" : reader.GetString(8),
+                    reader.IsDBNull(9) ? "" : reader.GetString(9),
+                    reader.IsDBNull(10) ? null : reader.GetDateTime(10)
+                ));
+            }
+        }
+
+        string reportTitle = GetUserReportTitle(request.ReportType);
+        int totalPages = (int)Math.Ceiling((double)summary.TotalRows / request.PageSize);
+        if (totalPages < 1) totalPages = 1;
+
+        return new CrmReportResponse(request.ReportType, reportTitle, summary, rows, request.PageNumber, request.PageSize, totalPages);
+    }
+
+    #endregion
+
 }

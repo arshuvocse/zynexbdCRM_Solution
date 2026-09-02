@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.activities
+package com.zynexbd.crmsolution.activities
 
 import android.Manifest
 import android.app.AlertDialog
@@ -198,7 +198,7 @@ class UserHomeActivity : BaseActivity() {
         }
 
         binding.buttonFollowUps.setOnClickListener {
-            startActivity(Intent(this, FollowUpsActivity::class.java))
+            startActivity(Intent(this, UserCrmFollowUpsActivity::class.java))
         }
 
         binding.buttonAttendanceHistory.setOnClickListener {

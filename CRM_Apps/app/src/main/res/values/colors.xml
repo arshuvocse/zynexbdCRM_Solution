@@ -56,6 +56,10 @@
     <color name="statusActiveBg">#D1FAE5</color>
     <color name="statusWarning">#D97706</color>
     <color name="statusWarningBg">#FEF3C7</color>
+    <color name="statusPending">#D97706</color>
+    <color name="statusPendingBg">#FEF3C7</color>
+    <color name="statusOverdue">#E11D48</color>
+    <color name="statusOverdueBg">#FFE4E6</color>
     <color name="statusInactive">#E11D48</color>
     <color name="statusInactiveBg">#FFE4E6</color>
 

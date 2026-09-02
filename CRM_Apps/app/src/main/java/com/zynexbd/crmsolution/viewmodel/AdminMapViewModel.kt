@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.viewmodel
+package com.zynexbd.crmsolution.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -34,24 +34,30 @@ class AdminMapViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             try {
                 val companyId = session.getCompanyId()
+                com.zynexbd.crmsolution.utils.AppLogger.i("AdminMapVM", "Loading initial user locations (CompanyId: $companyId)")
                 val resp = api.getLatestLocations(companyId)
                 if (resp.isSuccessful) {
                     val map = resp.body().orEmpty().associateBy { it.userId }
+                    com.zynexbd.crmsolution.utils.AppLogger.d("AdminMapVM", "Loaded ${map.size} initial locations")
                     _locations.postValue(map)
+                } else {
+                    com.zynexbd.crmsolution.utils.AppLogger.w("AdminMapVM", "Failed to load initial locations: HTTP ${resp.code()}")
                 }
             } catch (e: Exception) {
-                // Ignore or fallback
+                com.zynexbd.crmsolution.utils.AppLogger.e("AdminMapVM", "Error loading initial locations: ${e.message}", e)
             }
         }
     }
 
     private fun upsert(update: LocationResponse) {
+        com.zynexbd.crmsolution.utils.AppLogger.d("AdminMapVM", "Live location updated for user ID: ${update.userId} (${update.latitude}, ${update.longitude})")
         val current = _locations.value.orEmpty().toMutableMap()
         current[update.userId] = update
         _locations.postValue(current)
     }
 
     override fun onCleared() {
+        com.zynexbd.crmsolution.utils.AppLogger.i("AdminMapVM", "AdminMapViewModel onCleared, disconnecting SignalR")
         signalR.disconnect()
         super.onCleared()
     }

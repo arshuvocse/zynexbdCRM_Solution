@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.repository
+package com.zynexbd.crmsolution.repository
 
 import android.content.Context
 import com.zynexbd.crmsolution.models.*
@@ -12,6 +12,8 @@ class CrmRepository(context: Context) {
     private val api: ApiService = ApiClient.getApiService(context)
 
     // Manager
+    suspend fun getUsers(): Response<List<User>> = api.getUsers()
+
     suspend fun getManagerDashboard(officeLocationId: Int? = null): Response<ManagerCrmDashboard> =
         api.getCrmManagerDashboard(officeLocationId)
 
@@ -133,11 +135,130 @@ class CrmRepository(context: Context) {
 
     suspend fun addRemark(id: Int, request: CreateRemarkRequest): Response<CrmRemark> = api.addCrmRemark(id, request)
 
-    suspend fun getUserFollowUps(filterType: String? = null): Response<List<CrmFollowUpItem>> = api.getCrmUserFollowUps(filterType)
+    suspend fun getUserFollowUps(
+        filterType: String? = null,
+        fromDate: String? = null,
+        toDate: String? = null
+    ): Response<List<CrmFollowUpItem>> = api.getCrmUserFollowUps(filterType, fromDate, toDate)
 
     suspend fun getUserKpiPerformance(): Response<List<UserKpiPerformance>> = api.getCrmUserKpiPerformance()
 
     suspend fun getUserActiveProductServices(): Response<List<CrmProductService>> = api.getCrmUserActiveProductServices()
 
     suspend fun getUserActiveLeadSources(): Response<List<CrmLeadSource>> = api.getCrmUserActiveLeadSources()
+
+    // ==================== ENTERPRISE CRM DASHBOARDS & REPORTS ====================
+
+    suspend fun getAdminDashboard(
+        fromDate: String? = null,
+        toDate: String? = null,
+        officeLocationId: Int? = null,
+        managerId: Int? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ): Response<AdminCrmDashboardResponse> = api.getAdminCrmDashboard(
+        fromDate, toDate, officeLocationId, managerId, userId, productServiceId, leadStatus, leadSourceId
+    )
+
+    suspend fun getAdminReports(
+        reportType: Int = 1,
+        fromDate: String? = null,
+        toDate: String? = null,
+        officeLocationId: Int? = null,
+        managerId: Int? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ): Response<CrmReportResponse> = api.getAdminCrmReports(
+        reportType, fromDate, toDate, officeLocationId, managerId, userId,
+        productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
+    )
+
+    suspend fun exportAdminReport(
+        reportType: Int = 1,
+        fromDate: String? = null,
+        toDate: String? = null,
+        officeLocationId: Int? = null,
+        managerId: Int? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null
+    ): Response<ResponseBody> = api.exportAdminCrmReport(
+        reportType, fromDate, toDate, officeLocationId, managerId, userId, productServiceId, leadStatus, leadSourceId, search
+    )
+
+    suspend fun getManagerDashboardAnalytics(
+        officeLocationId: Int? = null,
+        fromDate: String? = null,
+        toDate: String? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ): Response<ManagerCrmDashboardResponse> = api.getManagerCrmDashboardAnalytics(
+        officeLocationId, fromDate, toDate, userId, productServiceId, leadStatus, leadSourceId
+    )
+
+    suspend fun getManagerReports(
+        reportType: Int = 1,
+        officeLocationId: Int? = null,
+        fromDate: String? = null,
+        toDate: String? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ): Response<CrmReportResponse> = api.getManagerCrmReports(
+        reportType, officeLocationId, fromDate, toDate, userId,
+        productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
+    )
+
+    suspend fun exportManagerReport(
+        reportType: Int = 1,
+        officeLocationId: Int? = null,
+        fromDate: String? = null,
+        toDate: String? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null
+    ): Response<ResponseBody> = api.exportManagerCrmReport(
+        reportType, officeLocationId, fromDate, toDate, userId, productServiceId, leadStatus, leadSourceId, search
+    )
+
+    suspend fun getUserDashboardAnalytics(
+        fromDate: String? = null,
+        toDate: String? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ): Response<UserCrmDashboardResponse> = api.getUserCrmDashboardAnalytics(
+        fromDate, toDate, productServiceId, leadStatus, leadSourceId
+    )
+
+    suspend fun getUserReports(
+        reportType: Int = 1,
+        fromDate: String? = null,
+        toDate: String? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ): Response<CrmReportResponse> = api.getUserCrmReports(
+        reportType, fromDate, toDate, productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
+    )
 }

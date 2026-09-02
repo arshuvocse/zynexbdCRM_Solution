@@ -34,3 +34,6 @@ $RECYCLE.BIN/
 *.tmp
 *.temp
 *.log
+*.rar
+*.zip
+

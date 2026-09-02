@@ -28,8 +28,8 @@ android {
 
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
-        buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8080/\"")
-        buildConfigField("String", "SIGNALR_HUB_URL", "\"http://127.0.0.1:8080/hubs/location\"")
+        buildConfigField("String", "API_BASE_URL", "\"http://103.244.247.179:370/\"")
+        buildConfigField("String", "SIGNALR_HUB_URL", "\"http://103.244.247.179:370/hubs/location\"")
         buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

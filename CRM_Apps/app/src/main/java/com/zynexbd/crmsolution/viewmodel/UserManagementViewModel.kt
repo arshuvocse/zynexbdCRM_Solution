@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.viewmodel
+package com.zynexbd.crmsolution.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -27,15 +27,20 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
 
     fun loadOfficeLocations(all: Boolean? = null) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.d("UserMgmtVM", "Loading office locations (all=$all)")
             repository.getOfficeLocations(all)
                 .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.d("UserMgmtVM", "Office locations loaded: ${it.size} entries")
                     if (all == true) {
                         _allOfficeLocations.value = it
                     } else {
                         _officeLocations.value = it
                     }
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "loadOfficeLocations failed: ${it.message}", it)
+                    _error.value = it.message
+                }
         }
     }
 
@@ -45,38 +50,66 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
     fun loadQuota() {
         viewModelScope.launch {
             repository.getUserQuota()
-                .onSuccess { _quota.value = it }
-                .onFailure { /* fallback */ }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.d("UserMgmtVM", "User quota loaded: ${it.usedUserCount}/${it.maxUserLimit}")
+                    _quota.value = it
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.w("UserMgmtVM", "loadQuota failed: ${it.message}")
+                }
         }
     }
 
     fun loadUsers() {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Loading user list")
             loadQuota()
             repository.getUsers()
-                .onSuccess { _users.value = it }
-                .onFailure { _error.value = it.message }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.d("UserMgmtVM", "Loaded ${it.size} users")
+                    _users.value = it
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "loadUsers failed: ${it.message}", it)
+                    _error.value = it.message
+                }
         }
     }
 
     fun createUser(request: CreateUserRequest, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Creating user: ${request.username} (${request.role})")
             repository.createUser(request)
-                .onSuccess { onDone(true); loadUsers(); loadQuota() }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "User created successfully: ${request.username}")
+                    onDone(true); loadUsers(); loadQuota()
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "createUser failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun toggleActive(user: User) {
         viewModelScope.launch {
-            repository.setActive(user, !user.isActive)
-                .onSuccess { loadUsers() }
-                .onFailure { _error.value = it.message }
+            val newState = !user.isActive
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Toggling user active state for '${user.username}' -> $newState")
+            repository.setActive(user, newState)
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "User active state updated for '${user.username}'")
+                    loadUsers()
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "toggleActive failed: ${it.message}", it)
+                    _error.value = it.message
+                }
         }
     }
 
     fun updateOfficeLocation(user: User, officeLocationId: Int, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Updating office location for '${user.username}' -> ID $officeLocationId")
             val request = UpdateUserRequest(
                 name = user.name,
                 role = user.role,
@@ -86,13 +119,20 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
                 assignedOfficeLocationIds = user.assignedOfficeLocationIds
             )
             repository.updateUser(user.id, request)
-                .onSuccess { onDone(true); loadUsers() }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Office location updated for '${user.username}'")
+                    onDone(true); loadUsers()
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "updateOfficeLocation failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun updateAdminOffices(user: User, assignedOfficeIds: List<Int>, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Updating admin offices for '${user.username}' -> $assignedOfficeIds")
             val request = UpdateUserRequest(
                 name = user.name,
                 role = user.role,
@@ -102,32 +142,59 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
                 assignedOfficeLocationIds = assignedOfficeIds
             )
             repository.updateUser(user.id, request)
-                .onSuccess { onDone(true); loadUsers() }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Admin offices updated for '${user.username}'")
+                    onDone(true); loadUsers()
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "updateAdminOffices failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun createOfficeLocation(request: CreateOfficeLocationRequest, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Creating office location: ${request.name}")
             repository.createOfficeLocation(request)
-                .onSuccess { onDone(true); loadOfficeLocations(); loadOfficeLocations(true) }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Office location created: ${request.name}")
+                    onDone(true); loadOfficeLocations(); loadOfficeLocations(true)
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "createOfficeLocation failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun updateOfficeLocationDetails(id: Int, request: UpdateOfficeLocationRequest, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Updating office location details for ID: $id")
             repository.updateOfficeLocation(id, request)
-                .onSuccess { onDone(true); loadOfficeLocations(); loadOfficeLocations(true) }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Office location updated for ID: $id")
+                    onDone(true); loadOfficeLocations(); loadOfficeLocations(true)
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "updateOfficeLocationDetails failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun deleteOfficeLocation(id: Int, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Deleting office location ID: $id")
             repository.deleteOfficeLocation(id)
-                .onSuccess { onDone(true); loadOfficeLocations(); loadOfficeLocations(true) }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Office location deleted for ID: $id")
+                    onDone(true); loadOfficeLocations(); loadOfficeLocations(true)
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "deleteOfficeLocation failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
@@ -136,14 +203,17 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
     fun getUserLocation(userId: Int, onResult: (LocationResponse?) -> Unit) {
         viewModelScope.launch {
             try {
+                com.zynexbd.crmsolution.utils.AppLogger.d("UserMgmtVM", "Fetching latest location for user ID: $userId")
                 val resp = api.getLatestLocations()
                 if (resp.isSuccessful) {
                     val loc = resp.body().orEmpty().firstOrNull { it.userId == userId }
                     onResult(loc)
                 } else {
+                    com.zynexbd.crmsolution.utils.AppLogger.w("UserMgmtVM", "Failed to fetch user location: HTTP ${resp.code()}")
                     onResult(null)
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "getUserLocation exception: ${e.message}", e)
                 onResult(null)
             }
         }
@@ -151,23 +221,34 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
 
     fun resetPassword(userId: Int, newPassword: String, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Resetting password for user ID: $userId")
             repository.resetPassword(userId, newPassword)
-                .onSuccess { onDone(true) }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Password reset success for user ID: $userId")
+                    onDone(true)
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "resetPassword failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 
     fun forceLogoutUser(userId: Int, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
+                com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Triggering force logout for user ID: $userId")
                 val resp = api.forceLogoutUser(userId)
                 if (resp.isSuccessful) {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Force logout success for user ID: $userId")
                     onDone(true)
                 } else {
+                    com.zynexbd.crmsolution.utils.AppLogger.w("UserMgmtVM", "Force logout failed: HTTP ${resp.code()}")
                     _error.value = "Force logout failed: HTTP ${resp.code()}"
                     onDone(false)
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "forceLogoutUser exception: ${e.message}", e)
                 _error.value = e.message ?: "Failed to connect to server."
                 onDone(false)
             }
@@ -176,9 +257,16 @@ class UserManagementViewModel(application: Application) : AndroidViewModel(appli
 
     fun resetUserDevice(userId: Int, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
+            com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Resetting device binding for user ID: $userId")
             repository.resetUserDevice(userId)
-                .onSuccess { onDone(true); loadUsers() }
-                .onFailure { _error.value = it.message; onDone(false) }
+                .onSuccess {
+                    com.zynexbd.crmsolution.utils.AppLogger.i("UserMgmtVM", "Device binding reset success for user ID: $userId")
+                    onDone(true); loadUsers()
+                }
+                .onFailure {
+                    com.zynexbd.crmsolution.utils.AppLogger.e("UserMgmtVM", "resetUserDevice failed: ${it.message}", it)
+                    _error.value = it.message; onDone(false)
+                }
         }
     }
 }

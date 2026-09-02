@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution
+package com.zynexbd.crmsolution
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,6 +17,15 @@ class LiveTrackingApp : Application() {
         // Initialize background notification sync worker
         NotificationSyncWorker.enqueuePeriodicSync(this)
 
+        // Initialize Global Uncaught Exception Handler to capture all crashes in Logcat
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            com.zynexbd.crmsolution.utils.AppLogger.e("CRASH_HANDLER", "CRITICAL UNCAUGHT EXCEPTION in thread '${thread.name}': ${throwable.message}", throwable)
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
+
+        com.zynexbd.crmsolution.utils.AppLogger.i("LiveTrackingApp", "Application initialized successfully. Base URL: ${com.zynexbd.crmsolution.utils.SessionManager(this).getServerBaseUrl()}")
+
         // Pre-warm Google Maps SDK Renderer in background so maps open instantly without lag
         Thread {
             try {
@@ -25,7 +34,9 @@ class LiveTrackingApp : Application() {
                     com.google.android.gms.maps.MapsInitializer.Renderer.LATEST,
                     null
                 )
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.w("LiveTrackingApp", "MapsInitializer pre-warm notice: ${e.message}")
+            }
         }.start()
     }
 }

@@ -1,22 +1,27 @@
-﻿package com.zynexbd.crmsolution.activities
+package com.zynexbd.crmsolution.activities
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zynexbd.crmsolution.R
 import com.zynexbd.crmsolution.adapters.FollowUpAdapter
 import com.zynexbd.crmsolution.databinding.ActivityFollowUpsBinding
+import com.zynexbd.crmsolution.models.FollowUpItem
 import com.zynexbd.crmsolution.network.RetrofitClient
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class FollowUpsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityFollowUpsBinding
     private lateinit var adapter: FollowUpAdapter
+    private var allFollowUps = listOf<FollowUpItem>()
     private var currentCategory = "Today"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +30,7 @@ class FollowUpsActivity : BaseActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
+        setupSearch()
 
         binding.buttonBack.setOnClickListener { finish() }
 
@@ -62,6 +68,37 @@ class FollowUpsActivity : BaseActivity() {
         )
         binding.recyclerViewFollowUps.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewFollowUps.adapter = adapter
+    }
+
+    private fun setupSearch() {
+        binding.editSearchFollowUp.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s?.toString().orEmpty()
+                binding.buttonClearSearch.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
+                filterFollowUps(query)
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        binding.buttonClearSearch.setOnClickListener {
+            binding.editSearchFollowUp.text?.clear()
+        }
+    }
+
+    private fun filterFollowUps(query: String) {
+        val clean = query.trim().lowercase(Locale.getDefault())
+        val filtered = if (clean.isEmpty()) {
+            allFollowUps
+        } else {
+            allFollowUps.filter {
+                it.customerName.lowercase(Locale.getDefault()).contains(clean) ||
+                it.mobile.lowercase(Locale.getDefault()).contains(clean) ||
+                it.address.lowercase(Locale.getDefault()).contains(clean) ||
+                (it.remarks?.lowercase(Locale.getDefault())?.contains(clean) == true)
+            }
+        }
+        adapter.submitList(filtered)
     }
 
     private fun selectCategory(cat: String) {
@@ -106,7 +143,8 @@ class FollowUpsActivity : BaseActivity() {
                 )
                 binding.swipeRefresh.isRefreshing = false
                 if (response.isSuccessful && response.body() != null) {
-                    adapter.submitList(response.body()!!)
+                    allFollowUps = response.body()!!
+                    filterFollowUps(binding.editSearchFollowUp.text.toString())
                 } else {
                     Toast.makeText(this@FollowUpsActivity, "ফলো-আপ তালিকা লোড করতে ব্যর্থ হয়েছে", Toast.LENGTH_SHORT).show()
                 }

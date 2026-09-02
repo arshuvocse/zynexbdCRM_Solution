@@ -47,6 +47,9 @@ class LeadDetailsActivity : BaseActivity() {
         setupUI()
         observeViewModel()
 
+        if (isManager) {
+            viewModel.loadEmployees()
+        }
         viewModel.loadLeadDetails(leadId, isManager)
     }
 
@@ -265,23 +268,44 @@ class LeadDetailsActivity : BaseActivity() {
 
         dBinding.buttonCancel.setOnClickListener { dialog.dismiss() }
 
-        // Load employees from productivity / performance list
-        val perf = viewModel.managerDashboard.value?.employeePerformance ?: emptyList()
-        val empNames = perf.map { "${it.employeeName} (ID: ${it.userId})" }
-        val empAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, empNames)
-        dBinding.spinnerAssignEmployee.adapter = empAdapter
+        var currentEmployees = viewModel.employees.value ?: emptyList()
+        if (currentEmployees.isEmpty()) {
+            viewModel.loadEmployees()
+        }
+
+        fun updateEmployeeSpinner(list: List<com.zynexbd.crmsolution.models.User>) {
+            currentEmployees = list
+            val empNames = if (list.isEmpty()) {
+                listOf("Loading employees...")
+            } else {
+                list.map { "${it.name.ifBlank { it.username }} (${it.role})" }
+            }
+            val empAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, empNames)
+            dBinding.spinnerAssignEmployee.adapter = empAdapter
+        }
+
+        updateEmployeeSpinner(currentEmployees)
+
+        viewModel.employees.observe(this) { updatedList ->
+            if (dialog.isShowing) {
+                updateEmployeeSpinner(updatedList)
+            }
+        }
 
         dBinding.buttonSubmit.setOnClickListener {
-            if (perf.isEmpty() || dBinding.spinnerAssignEmployee.selectedItemPosition < 0) {
-                Toast.makeText(this, "No employee selected", Toast.LENGTH_SHORT).show()
+            if (currentEmployees.isEmpty() || dBinding.spinnerAssignEmployee.selectedItemPosition < 0 || dBinding.spinnerAssignEmployee.selectedItemPosition >= currentEmployees.size) {
+                Toast.makeText(this, "Please select an employee", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val selectedEmp = perf[dBinding.spinnerAssignEmployee.selectedItemPosition]
+            val selectedEmp = currentEmployees[dBinding.spinnerAssignEmployee.selectedItemPosition]
             val remarks = dBinding.editAssignRemarks.text.toString().trim().ifBlank { null }
 
-            viewModel.assignLead(leadId, selectedEmp.userId, remarks) { success ->
-                if (success) dialog.dismiss()
+            viewModel.assignLead(leadId, selectedEmp.id, remarks) { success ->
+                if (success) {
+                    Toast.makeText(this, "Assigned to ${selectedEmp.name.ifBlank { selectedEmp.username }}", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
             }
         }
 

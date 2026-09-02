@@ -175,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:letterSpacing="0.04"
-                    android:text="DIGITAL WORKSPACE"
+                    android:text="@string/digital_workspace"
                     android:textColor="#0F172A"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -621,8 +621,9 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Row 4: Leave Management & History -->
+                <!-- Row 4: Leave Management & History (Hidden for now) -->
                 <LinearLayout
+                    android:id="@+id/cardLeaveManagement"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -630,7 +631,8 @@
                     android:elevation="3dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="14dp">
+                    android:padding="14dp"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="28dp"

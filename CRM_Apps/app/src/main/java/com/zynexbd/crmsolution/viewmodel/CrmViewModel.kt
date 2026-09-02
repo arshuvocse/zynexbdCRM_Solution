@@ -27,25 +27,42 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
     val managerProductivity = MutableLiveData<ManagerProductivity?>()
     val productServices = MutableLiveData<List<CrmProductService>>(emptyList())
     val leadSources = MutableLiveData<List<CrmLeadSource>>(emptyList())
+    val employees = MutableLiveData<List<User>>(emptyList())
 
-    // User states
     val userDashboard = MutableLiveData<UserCrmDashboard?>()
     val userLeads = MutableLiveData<PagedResult<CrmLead>?>()
     val userFollowUps = MutableLiveData<List<CrmFollowUpItem>>(emptyList())
     val userKpiPerformance = MutableLiveData<List<UserKpiPerformance>>(emptyList())
 
+    // Enterprise CRM Dashboards & Reports
+    val adminCrmDashboard = MutableLiveData<AdminCrmDashboardResponse?>()
+    val managerCrmDashboard = MutableLiveData<ManagerCrmDashboardResponse?>()
+    val userCrmDashboardAnalytics = MutableLiveData<UserCrmDashboardResponse?>()
+    val adminReport = MutableLiveData<CrmReportResponse?>()
+    val managerReport = MutableLiveData<CrmReportResponse?>()
+    val userReport = MutableLiveData<CrmReportResponse?>()
+
+    companion object {
+        private const val TAG = "CrmViewModel"
+    }
+
     // Manager actions
     fun loadManagerDashboard(officeLocationId: Int? = null) {
         isLoading.value = true
+        com.zynexbd.crmsolution.utils.AppLogger.i(TAG, "loadManagerDashboard requested (officeLocationId=$officeLocationId)")
         viewModelScope.launch {
             try {
                 val res = repository.getManagerDashboard(officeLocationId)
                 if (res.isSuccessful) {
+                    com.zynexbd.crmsolution.utils.AppLogger.d(TAG, "Manager dashboard loaded successfully")
                     managerDashboard.value = res.body()
                 } else {
-                    errorMessage.value = "Failed to load CRM Dashboard (${res.code()})"
+                    val err = "Failed to load CRM Dashboard (${res.code()})"
+                    com.zynexbd.crmsolution.utils.AppLogger.w(TAG, err)
+                    errorMessage.value = err
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "loadManagerDashboard exception: ${e.message}", e)
                 errorMessage.value = e.localizedMessage ?: "Network error"
             } finally {
                 isLoading.value = false
@@ -68,6 +85,7 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
         pageSize: Int = 20
     ) {
         isLoading.value = true
+        com.zynexbd.crmsolution.utils.AppLogger.i(TAG, "loadManagerLeads requested: page=$pageNumber, search='$search', status='$status'")
         viewModelScope.launch {
             try {
                 val res = repository.getManagerLeads(
@@ -75,11 +93,16 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
                     fromDate, toDate, search, sortBy, sortOrder, pageNumber, pageSize
                 )
                 if (res.isSuccessful) {
-                    managerLeads.value = res.body()
+                    val body = res.body()
+                    com.zynexbd.crmsolution.utils.AppLogger.d(TAG, "Manager leads loaded: ${body?.items?.size ?: 0} items (Total: ${body?.totalRecords ?: 0})")
+                    managerLeads.value = body
                 } else {
-                    errorMessage.value = "Failed to load Leads (${res.code()})"
+                    val err = "Failed to load Leads (${res.code()})"
+                    com.zynexbd.crmsolution.utils.AppLogger.w(TAG, err)
+                    errorMessage.value = err
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "loadManagerLeads exception: ${e.message}", e)
                 errorMessage.value = e.localizedMessage ?: "Network error"
             } finally {
                 isLoading.value = false
@@ -89,15 +112,20 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadLeadDetails(leadId: Int, isManager: Boolean = true) {
         isLoading.value = true
+        com.zynexbd.crmsolution.utils.AppLogger.i(TAG, "loadLeadDetails requested for Lead ID: $leadId (isManager=$isManager)")
         viewModelScope.launch {
             try {
                 val res = if (isManager) repository.getManagerLeadDetails(leadId) else repository.getUserLeadDetails(leadId)
                 if (res.isSuccessful) {
+                    com.zynexbd.crmsolution.utils.AppLogger.d(TAG, "Lead details loaded for ID: $leadId")
                     leadDetails.value = res.body()
                 } else {
-                    errorMessage.value = "Failed to load Lead details (${res.code()})"
+                    val err = "Failed to load Lead details (${res.code()})"
+                    com.zynexbd.crmsolution.utils.AppLogger.w(TAG, err)
+                    errorMessage.value = err
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "loadLeadDetails exception: ${e.message}", e)
                 errorMessage.value = e.localizedMessage ?: "Network error"
             } finally {
                 isLoading.value = false
@@ -107,10 +135,12 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createLead(request: CreateCrmLeadRequest, isManager: Boolean, onComplete: (Boolean) -> Unit) {
         isLoading.value = true
+        com.zynexbd.crmsolution.utils.AppLogger.i(TAG, "createLead requested: leadName='${request.leadName}', phone='${request.phone}'")
         viewModelScope.launch {
             try {
                 val res = if (isManager) repository.createLeadByManager(request) else repository.createSelfLead(request)
                 if (res.isSuccessful) {
+                    com.zynexbd.crmsolution.utils.AppLogger.i(TAG, "Lead created successfully: ID=${res.body()?.leadId}")
                     successMessage.value = "Lead created successfully!"
                     onComplete(true)
                 } else {
@@ -121,10 +151,12 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
                     } catch (_: Exception) {
                         rawErr?.takeIf { it.isNotBlank() } ?: "Failed to create Lead (${res.code()})"
                     }
+                    com.zynexbd.crmsolution.utils.AppLogger.w(TAG, "createLead failed: $msg")
                     errorMessage.value = msg
                     onComplete(false)
                 }
             } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "createLead exception: ${e.message}", e)
                 errorMessage.value = e.localizedMessage ?: "Network error"
                 onComplete(false)
             } finally {
@@ -356,6 +388,23 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun exportKpiCsv(officeLocationId: Int? = null) = repository.exportKpi(officeLocationId)
 
+    fun loadEmployees() {
+        viewModelScope.launch {
+            try {
+                val res = repository.getUsers()
+                if (res.isSuccessful) {
+                    val list = res.body()?.filter { it.isActive } ?: emptyList()
+                    employees.value = list
+                    com.zynexbd.crmsolution.utils.AppLogger.d(TAG, "Loaded ${list.size} active employees")
+                } else {
+                    com.zynexbd.crmsolution.utils.AppLogger.w(TAG, "Failed to load employees (${res.code()})")
+                }
+            } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "loadEmployees exception: ${e.message}", e)
+            }
+        }
+    }
+
     fun loadMasterData(isManager: Boolean = true) {
         viewModelScope.launch {
             try {
@@ -364,6 +413,10 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
 
                 val sRes = if (isManager) repository.getLeadSources(true) else repository.getUserActiveLeadSources()
                 if (sRes.isSuccessful) leadSources.value = sRes.body() ?: emptyList()
+
+                if (isManager) {
+                    loadEmployees()
+                }
             } catch (_: Exception) {}
         }
     }
@@ -419,11 +472,11 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun loadUserFollowUps(filterType: String? = null) {
+    fun loadUserFollowUps(filterType: String? = null, fromDate: String? = null, toDate: String? = null) {
         isLoading.value = true
         viewModelScope.launch {
             try {
-                val res = repository.getUserFollowUps(filterType)
+                val res = repository.getUserFollowUps(filterType, fromDate, toDate)
                 if (res.isSuccessful) {
                     userFollowUps.value = res.body() ?: emptyList()
                 } else {
@@ -446,6 +499,174 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
                     userKpiPerformance.value = res.body() ?: emptyList()
                 } else {
                     errorMessage.value = "Failed to load KPI Performance (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    // ==================== ENTERPRISE CRM ACTIONS ====================
+
+    fun loadAdminCrmDashboard(
+        fromDate: String? = null,
+        toDate: String? = null,
+        officeLocationId: Int? = null,
+        managerId: Int? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getAdminDashboard(fromDate, toDate, officeLocationId, managerId, userId, productServiceId, leadStatus, leadSourceId)
+                if (res.isSuccessful) {
+                    adminCrmDashboard.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load Admin CRM Dashboard (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadManagerCrmDashboardAnalytics(
+        officeLocationId: Int? = null,
+        fromDate: String? = null,
+        toDate: String? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getManagerDashboardAnalytics(officeLocationId, fromDate, toDate, userId, productServiceId, leadStatus, leadSourceId)
+                if (res.isSuccessful) {
+                    managerCrmDashboard.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load Manager CRM Dashboard (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadUserCrmDashboardAnalytics(
+        fromDate: String? = null,
+        toDate: String? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getUserDashboardAnalytics(fromDate, toDate, productServiceId, leadStatus, leadSourceId)
+                if (res.isSuccessful) {
+                    userCrmDashboardAnalytics.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load User CRM Dashboard (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadAdminReport(
+        reportType: Int = 1,
+        fromDate: String? = null,
+        toDate: String? = null,
+        officeLocationId: Int? = null,
+        managerId: Int? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getAdminReports(reportType, fromDate, toDate, officeLocationId, managerId, userId, productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize)
+                if (res.isSuccessful) {
+                    adminReport.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load report (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadManagerReport(
+        reportType: Int = 1,
+        officeLocationId: Int? = null,
+        fromDate: String? = null,
+        toDate: String? = null,
+        userId: Int? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getManagerReports(reportType, officeLocationId, fromDate, toDate, userId, productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize)
+                if (res.isSuccessful) {
+                    managerReport.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load team report (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadUserReport(
+        reportType: Int = 1,
+        fromDate: String? = null,
+        toDate: String? = null,
+        productServiceId: Int? = null,
+        leadStatus: String? = null,
+        leadSourceId: Int? = null,
+        search: String? = null,
+        pageNumber: Int = 1,
+        pageSize: Int = 20
+    ) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getUserReports(reportType, fromDate, toDate, productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize)
+                if (res.isSuccessful) {
+                    userReport.value = res.body()
+                } else {
+                    errorMessage.value = "Failed to load my report (${res.code()})"
                 }
             } catch (e: Exception) {
                 errorMessage.value = e.localizedMessage ?: "Network error"

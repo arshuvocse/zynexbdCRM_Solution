@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.utils
+package com.zynexbd.crmsolution.utils
 
 import android.content.Context
 import android.content.Intent
@@ -112,7 +112,28 @@ class SessionManager(context: Context) {
         } catch (_: Exception) {}
     }
 
+    fun getServerBaseUrl(): String {
+        val custom = prefs.getString(KEY_CUSTOM_SERVER_URL, null)
+        if (!custom.isNullOrBlank()) {
+            return if (custom.endsWith("/")) custom else "$custom/"
+        }
+        return com.zynexbd.crmsolution.BuildConfig.API_BASE_URL
+    }
+
+    fun setServerBaseUrl(url: String?) {
+        val editor = prefs.edit()
+        if (url.isNullOrBlank()) {
+            editor.remove(KEY_CUSTOM_SERVER_URL)
+        } else {
+            val clean = url.trim()
+            val formatted = if (clean.endsWith("/")) clean else "$clean/"
+            editor.putString(KEY_CUSTOM_SERVER_URL, formatted)
+        }
+        editor.apply()
+    }
+
     companion object {
+        private const val KEY_CUSTOM_SERVER_URL = "custom_server_url"
         private const val KEY_TOKEN = "token"
         private const val KEY_ROLE = "role"
         private const val KEY_USER_ID = "user_id"

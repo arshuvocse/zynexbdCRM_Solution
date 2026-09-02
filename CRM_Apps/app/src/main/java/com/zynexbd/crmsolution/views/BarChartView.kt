@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.views
+package com.zynexbd.crmsolution.views
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -21,7 +21,7 @@ class BarChartView @JvmOverloads constructor(
     data class BarEntry(
         val label: String,
         val primaryValue: Float,   // e.g. Visits
-        val secondaryValue: Float  // e.g. Follow-ups
+        val secondaryValue: Float = 0f  // e.g. Follow-ups
     )
 
     private val entries = mutableListOf<BarEntry>()

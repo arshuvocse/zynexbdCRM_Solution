@@ -25,13 +25,48 @@ public class CompaniesController : ControllerBase
         return int.TryParse(claim, out var id) ? id : 0;
     }
 
+    private async Task<int> GetCurrentCompanyIdAsync()
+    {
+        var claim = User.FindFirst("companyId")?.Value;
+        if (int.TryParse(claim, out var cid) && cid > 0)
+        {
+            return cid;
+        }
+
+        int userId = GetCurrentUserId();
+        if (userId > 0)
+        {
+            var userCid = await _db.Users
+                .Where(u => u.UserId == userId)
+                .Select(u => u.CompanyId)
+                .FirstOrDefaultAsync();
+
+            if (userCid.HasValue && userCid.Value > 0)
+            {
+                return userCid.Value;
+            }
+        }
+
+        return 0;
+    }
+
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<CompanyDto>>> GetCompanies()
     {
-        var companies = await _db.Companies
+        var currentCompanyId = await GetCurrentCompanyIdAsync();
+        var query = _db.Companies
             .Include(c => c.Users)
             .Include(c => c.OfficeLocations)
+            .AsQueryable();
+
+        if (currentCompanyId > 0)
+        {
+            // Strict tenant isolation: Tenant Admin can only see their own company
+            query = query.Where(c => c.CompanyId == currentCompanyId);
+        }
+
+        var companies = await query
             .OrderByDescending(c => c.CompanyId)
             .ToListAsync();
 
@@ -56,7 +91,7 @@ public class CompaniesController : ControllerBase
                 c.IsActive,
                 c.OfficeLocations.Count(o => o.IsActive),
                 c.Users.Count(u => u.Role == "Admin" && u.IsActive),
-                c.Users.Count(u => u.Role == "User" && u.IsActive),
+                c.Users.Count(u => u.Role != "Admin" && u.IsActive),
                 status
             );
         }).ToList();
@@ -68,6 +103,12 @@ public class CompaniesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CompanyDto>> GetCompanyById(int id)
     {
+        var currentCompanyId = await GetCurrentCompanyIdAsync();
+        if (currentCompanyId > 0 && currentCompanyId != id)
+        {
+            return Forbid();
+        }
+
         var c = await _db.Companies
             .Include(c => c.Users)
             .Include(c => c.OfficeLocations)
@@ -94,7 +135,7 @@ public class CompaniesController : ControllerBase
             c.IsActive,
             c.OfficeLocations.Count(o => o.IsActive),
             c.Users.Count(u => u.Role == "Admin" && u.IsActive),
-            c.Users.Count(u => u.Role == "User" && u.IsActive),
+            c.Users.Count(u => u.Role != "Admin" && u.IsActive),
             status
         ));
     }
@@ -103,6 +144,12 @@ public class CompaniesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CompanyStatsDto>> GetCompanyStats(int id)
     {
+        var currentCompanyId = await GetCurrentCompanyIdAsync();
+        if (currentCompanyId > 0 && currentCompanyId != id)
+        {
+            return Forbid();
+        }
+
         var c = await _db.Companies
             .Include(c => c.Users)
             .Include(c => c.OfficeLocations)

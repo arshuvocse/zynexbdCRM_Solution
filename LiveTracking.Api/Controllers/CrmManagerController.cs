@@ -97,6 +97,111 @@ public class CrmManagerController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Returns the complete Manager CRM Dashboard with 9 Cards + 8 Visual Charts scoped to team
+    /// </summary>
+    [HttpGet("dashboard/analytics")]
+    public async Task<ActionResult<ManagerCrmDashboardResponse>> GetDashboardAnalytics(
+        [FromQuery] int? officeLocationId = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] int? userId = null,
+        [FromQuery] int? productServiceId = null,
+        [FromQuery] string? leadStatus = null,
+        [FromQuery] int? leadSourceId = null)
+    {
+        int companyId = await GetCurrentCompanyIdAsync();
+        if (companyId <= 0) return Forbid();
+
+        var (officeScope, ok) = await ResolveOfficeScopeAsync(officeLocationId);
+        if (!ok) return OfficeForbidden();
+
+        int currentUserId = GetCurrentUserId();
+        var filters = new CrmDashboardFilterRequest(fromDate, toDate, officeLocationId, currentUserId, userId, productServiceId, leadStatus, leadSourceId);
+        var result = await _crm.GetManagerCrmDashboardAsync(companyId, currentUserId, officeScope, filters);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns paginated Manager CRM Reports (12 Reports) scoped to authorized team
+    /// </summary>
+    [HttpGet("reports")]
+    public async Task<ActionResult<CrmReportResponse>> GetReports(
+        [FromQuery] int reportType = 1,
+        [FromQuery] int? officeLocationId = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] int? userId = null,
+        [FromQuery] int? productServiceId = null,
+        [FromQuery] string? leadStatus = null,
+        [FromQuery] int? leadSourceId = null,
+        [FromQuery] string? search = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        int companyId = await GetCurrentCompanyIdAsync();
+        if (companyId <= 0) return Forbid();
+
+        var (officeScope, ok) = await ResolveOfficeScopeAsync(officeLocationId);
+        if (!ok) return OfficeForbidden();
+
+        int currentUserId = GetCurrentUserId();
+        if (reportType < 1 || reportType > 13) reportType = 1;
+
+        var request = new CrmReportFilterRequest(
+            reportType, fromDate, toDate, officeLocationId, currentUserId, userId,
+            productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
+        );
+
+        var result = await _crm.GetManagerReportAsync(companyId, currentUserId, officeScope, request);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Exports specified Manager CRM report to CSV format
+    /// </summary>
+    [HttpGet("reports/export")]
+    public async Task<IActionResult> ExportReport(
+        [FromQuery] int reportType = 1,
+        [FromQuery] int? officeLocationId = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] int? userId = null,
+        [FromQuery] int? productServiceId = null,
+        [FromQuery] string? leadStatus = null,
+        [FromQuery] int? leadSourceId = null,
+        [FromQuery] string? search = null)
+    {
+        int companyId = await GetCurrentCompanyIdAsync();
+        if (companyId <= 0) return Forbid();
+
+        var (officeScope, ok) = await ResolveOfficeScopeAsync(officeLocationId);
+        if (!ok) return OfficeForbidden();
+
+        int currentUserId = GetCurrentUserId();
+        var request = new CrmReportFilterRequest(
+            reportType, fromDate, toDate, officeLocationId, currentUserId, userId,
+            productServiceId, leadStatus, leadSourceId, search, 1, 10000
+        );
+
+        var report = await _crm.GetManagerReportAsync(companyId, currentUserId, officeScope, request);
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"# Report: {report.ReportTitle}");
+        sb.AppendLine($"# GeneratedUtc: {DateTime.UtcNow:O}");
+        sb.AppendLine($"# {report.Summary.Summary1Label}: {report.Summary.Summary1Value}, {report.Summary.Summary2Label}: {report.Summary.Summary2Value}, {report.Summary.Summary3Label}: {report.Summary.Summary3Value}");
+        sb.AppendLine("RowId,Title,Subtitle,Tag,Value1,Value2,Value3,Value4,Status,CreatedAtUtc");
+
+        foreach (var r in report.Rows)
+        {
+            sb.AppendLine($"{r.RowId},\"{r.Title?.Replace("\"", "\"\"")}\",\"{r.Subtitle?.Replace("\"", "\"\"")}\",\"{r.Tag?.Replace("\"", "\"\"")}\",\"{r.Value1?.Replace("\"", "\"\"")}\",\"{r.Value2?.Replace("\"", "\"\"")}\",\"{r.Value3?.Replace("\"", "\"\"")}\",\"{r.Value4?.Replace("\"", "\"\"")}\",\"{r.Status?.Replace("\"", "\"\"")}\",\"{r.CreatedAtUtc:O}\"");
+        }
+
+        var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+        string safeTitle = report.ReportTitle.Replace(" ", "_").ToLower();
+        return File(bytes, "text/csv", $"crm_manager_{safeTitle}_{DateTime.UtcNow:yyyyMMddHHmm}.csv");
+    }
+
     [HttpGet("leads")]
     public async Task<ActionResult<PagedResult<CrmLeadResponse>>> GetLeads(
         [FromQuery] int? officeLocationId = null,

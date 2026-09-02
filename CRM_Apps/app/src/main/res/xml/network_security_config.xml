@@ -10,6 +10,7 @@
 
     <!-- Specific domain/IP rules -->
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">103.244.247.179</domain>
         <domain includeSubdomains="true">104.215.157.203</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>

@@ -75,6 +75,16 @@ public interface ICrmService
     Task<CrmLeadDetailResponse?> UpdateLeadStatusByUserAsync(int companyId, int userId, int leadId, UpdateLeadStatusRequest request);
     Task<CrmFollowUpDto?> AddFollowUpAsync(int companyId, int userId, int leadId, CreateFollowUpRequest request, bool isManagerOrAdmin = false);
     Task<CrmRemarkDto?> AddRemarkAsync(int companyId, int userId, int leadId, CreateRemarkRequest request, bool isManagerOrAdmin = false);
-    Task<List<CrmFollowUpItemDto>> GetUserFollowUpsAsync(int companyId, int userId, string? filterType = null);
+    // Enterprise Dashboard & Analytics
+    Task<AdminCrmDashboardResponse> GetAdminDashboardAsync(int companyId, CrmDashboardFilterRequest filters);
+    Task<ManagerCrmDashboardResponse> GetManagerCrmDashboardAsync(int companyId, int managerUserId, CrmOfficeScope officeScope, CrmDashboardFilterRequest filters);
+    Task<UserCrmDashboardResponse> GetUserCrmDashboardAsync(int companyId, int userId, CrmDashboardFilterRequest filters);
+
+    // Enterprise CRM Reports
+    Task<CrmReportResponse> GetAdminReportAsync(int companyId, CrmReportFilterRequest request);
+    Task<CrmReportResponse> GetManagerReportAsync(int companyId, int managerUserId, CrmOfficeScope officeScope, CrmReportFilterRequest request);
+    Task<CrmReportResponse> GetUserReportAsync(int companyId, int userId, CrmReportFilterRequest request);
+
+    Task<List<CrmFollowUpItemDto>> GetUserFollowUpsAsync(int companyId, int userId, string? filterType = null, DateTime? fromDate = null, DateTime? toDate = null);
     Task<List<UserKpiPerformanceResponse>> GetUserKpiPerformanceAsync(int companyId, int userId);
 }

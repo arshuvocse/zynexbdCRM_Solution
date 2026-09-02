@@ -82,14 +82,47 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/spinnerCustomer"
+                <!-- Select2 Searchable Customer Field -->
+                <LinearLayout
+                    android:id="@+id/containerSelectCustomer"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="52dp"
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/bg_glass_input"
-                    android:paddingHorizontal="14dp" />
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#6366F1" />
+
+                    <TextView
+                        android:id="@+id/textSelectedCustomer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Select Customer (Search by Name / Mobile)..."
+                        android:textColor="#0F172A"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="6dp"
+                        android:src="@drawable/ic_arrow_drop_down"
+                        app:tint="#64748B" />
+                </LinearLayout>
 
                 <!-- GPS Status Bar -->
                 <LinearLayout
@@ -109,7 +142,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Visit Status -->
+                <!-- Visit Status (Professional Radio Button List) -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -118,14 +151,70 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/spinnerVisitStatus"
+                <RadioGroup
+                    android:id="@+id/radioGroupVisitStatus"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_glass_input"
-                    android:paddingHorizontal="14dp" />
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/radioStatusCompleted"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_radio_status_item"
+                        android:buttonTint="#6366F1"
+                        android:checked="true"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="10dp"
+                        android:text="✅  Completed (ভিজিট সম্পন্ন)"
+                        android:textColor="@color/color_radio_status_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radioStatusFollowUp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_radio_status_item"
+                        android:buttonTint="#6366F1"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="10dp"
+                        android:text="⏳  Follow-up Required (পুনরায় ফলো-আপ প্রয়োজন)"
+                        android:textColor="@color/color_radio_status_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radioStatusOrder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_radio_status_item"
+                        android:buttonTint="#6366F1"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="10dp"
+                        android:text="📦  Order Received (অর্ডার বা সেল সম্পন্ন)"
+                        android:textColor="@color/color_radio_status_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radioStatusClosed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_radio_status_item"
+                        android:buttonTint="#6366F1"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="10dp"
+                        android:text="🔒  Closed (ভিজিট সমাপ্ত)"
+                        android:textColor="@color/color_radio_status_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </RadioGroup>
 
                 <!-- Remarks -->
                 <TextView
