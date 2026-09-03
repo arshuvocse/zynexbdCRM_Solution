@@ -491,3 +491,41 @@ public record CrmReportResponse(
     int PageSize,
     int TotalPages
 );
+
+// Dynamic Company Branding DTOs
+public record CompanyBrandingDto(
+    int CompanyId,
+    string CompanyName,
+    string CompanyCode,
+    string? LogoUrl,
+    string? ContactPhone,
+    string? ContactEmail,
+    string? ContactPerson
+);
+
+public record UpdateCompanyBrandingRequest(
+    string? CompanyName,
+    string? LogoUrl
+);
+
+// Product / Service Management DTOs
+public record CrmProductServiceStatusRequest(
+    bool IsActive
+);
+
+// Real-Time Live Team Activity Feed DTO
+public record LiveTeamActivityDto(
+    int ActivityId,
+    int CompanyId,
+    int UserId,
+    string UserName,
+    string UserRole,
+    string ActionType, // LeadCreated, FollowUpAdded, StatusChanged, LeadAssigned, LeadReassigned, RemarkAdded, CustomerVisit, KpiCreated, KpiUpdated
+    string EntityType, // "Lead", "Kpi", "CustomerVisit"
+    string Title,
+    string Subtitle,
+    string BadgeColorHex,
+    int? TargetEntityId,
+    DateTime CreatedAtUtc
+);
+

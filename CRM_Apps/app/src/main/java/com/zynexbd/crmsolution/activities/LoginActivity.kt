@@ -121,19 +121,20 @@ class LoginActivity : BaseActivity() {
         val input = EditText(this).apply {
             setText(currentUrl)
             setSelection(text.length)
-            hint = "http://192.168.110.108:8080/"
+            hint = "http://217.216.39.94:83/"
         }
         AlertDialog.Builder(this)
             .setTitle("⚙️ Server Configuration")
-            .setMessage("Configure API Base URL (e.g. http://192.168.110.108:8080/ for WiFi or http://127.0.0.1:8080/ for ADB reverse):")
+            .setMessage("Configure API Base URL (e.g. http://217.216.39.94:83/):")
             .setView(input)
             .setPositiveButton("Save") { _, _ ->
                 val newUrl = input.text.toString().trim()
                 if (newUrl.isNotBlank()) {
-                    session.setServerBaseUrl(newUrl)
+                    val sanitized = ApiClient.sanitizeBaseUrl(newUrl)
+                    session.setServerBaseUrl(sanitized)
                     ApiClient.resetClient()
-                    AppLogger.i(TAG, "Updated Server Base URL to: $newUrl")
-                    Toast.makeText(this, "Server URL updated: $newUrl", Toast.LENGTH_SHORT).show()
+                    AppLogger.i(TAG, "Updated Server Base URL to: $sanitized")
+                    Toast.makeText(this, "সার্ভার URL আপডেট হয়েছে: $sanitized", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Reset to Default") { _, _ ->

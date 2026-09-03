@@ -8,12 +8,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
+import com.zynexbd.crmsolution.R
 import com.zynexbd.crmsolution.databinding.ActivityManagerCrmDashboardBinding
 import com.zynexbd.crmsolution.models.ChartBarEntry
 import com.zynexbd.crmsolution.models.ChartDonutSlice
+import com.zynexbd.crmsolution.utils.SessionManager
 import com.zynexbd.crmsolution.viewmodel.CrmViewModel
 import com.zynexbd.crmsolution.views.BarChartView
 import com.zynexbd.crmsolution.views.DonutChartView
+import com.zynexbd.crmsolution.adapters.LiveTeamActivityAdapter
+import com.zynexbd.crmsolution.network.SignalRClient
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -23,6 +27,9 @@ class ManagerCrmDashboardActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityManagerCrmDashboardBinding
     private lateinit var viewModel: CrmViewModel
+    private lateinit var session: SessionManager
+    private lateinit var liveActivityAdapter: LiveTeamActivityAdapter
+    private var signalRClient: SignalRClient? = null
 
     private var fromDateStr: String? = null
     private var toDateStr: String? = null
@@ -34,11 +41,13 @@ class ManagerCrmDashboardActivity : AppCompatActivity() {
         binding = ActivityManagerCrmDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        session = SessionManager(this)
         viewModel = ViewModelProvider(this)[CrmViewModel::class.java]
 
         setupListeners()
         setupDateFilters()
         observeViewModel()
+        setupLiveSignalR()
 
         loadDashboard()
     }
@@ -66,8 +75,53 @@ class ManagerCrmDashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, ManagerCrmReportsActivity::class.java))
         }
 
+        binding.buttonProducts.setOnClickListener {
+            startActivity(Intent(this, ProductServiceManagementActivity::class.java))
+        }
+
         binding.buttonTeamKpi.setOnClickListener {
             startActivity(Intent(this, AdminCrmKpiActivity::class.java))
+        }
+
+        setupLiveActivities()
+        setupCompanyBrandingCard()
+    }
+
+    private fun setupCompanyBrandingCard() {
+        val userName = session.getFullName() ?: session.getUsername() ?: "User"
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val timeGreeting = when {
+            hour < 12 -> "Good Morning"
+            hour < 17 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+        binding.textUserGreeting.text = "$timeGreeting, $userName"
+        binding.textCompanyName.text = session.getCompanyName() ?: "CRM SOLUTION"
+        binding.textRoleBadge.text = (session.getRole() ?: "MANAGER").uppercase()
+
+        val logoUrl = session.getCompanyLogoUrl()
+        loadBrandingLogo(logoUrl)
+
+        viewModel.loadCompanyBranding { branding ->
+            if (branding != null) {
+                session.saveCompanyBranding(branding.companyName, branding.logoUrl)
+                binding.textCompanyName.text = branding.companyName
+                loadBrandingLogo(branding.logoUrl)
+            }
+        }
+    }
+
+    private fun loadBrandingLogo(logoUrl: String?) {
+        if (!logoUrl.isNullOrBlank()) {
+            val fullUrl = if (logoUrl.startsWith("http")) logoUrl else session.getServerBaseUrl().trimEnd('/') + "/" + logoUrl.trimStart('/')
+            com.bumptech.glide.Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.ic_person_custom)
+                .error(R.drawable.ic_person_custom)
+                .circleCrop()
+                .into(binding.imageCompanyLogo)
+        } else {
+            binding.imageCompanyLogo.setImageResource(R.drawable.ic_person_custom)
         }
     }
 
@@ -118,6 +172,7 @@ class ManagerCrmDashboardActivity : AppCompatActivity() {
             fromDate = fromDateStr,
             toDate = toDateStr
         )
+        viewModel.loadLiveTeamActivities()
     }
 
     private fun observeViewModel() {
@@ -193,12 +248,73 @@ class ManagerCrmDashboardActivity : AppCompatActivity() {
             binding.textSourceLegend.text = data.sourceDistribution.joinToString(" • ") { "${it.label}: ${it.value.toInt()}" }
         }
 
+        viewModel.liveTeamActivities.observe(this) { list ->
+            if (list.isNullOrEmpty()) {
+                binding.textEmptyLiveActivities.visibility = View.VISIBLE
+                binding.recyclerLiveActivities.visibility = View.GONE
+            } else {
+                binding.textEmptyLiveActivities.visibility = View.GONE
+                binding.recyclerLiveActivities.visibility = View.VISIBLE
+                liveActivityAdapter.submitList(list)
+            }
+        }
+
         viewModel.errorMessage.observe(this) { err ->
             if (!err.isNullOrBlank()) {
                 binding.swipeRefresh.isRefreshing = false
                 Toast.makeText(this, err, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setupLiveActivities() {
+        liveActivityAdapter = LiveTeamActivityAdapter { item ->
+            if (item.entityType == "Lead" && item.targetEntityId != null && item.targetEntityId > 0) {
+                startActivity(Intent(this, LeadDetailsActivity::class.java).apply {
+                    putExtra("LEAD_ID", item.targetEntityId)
+                })
+            } else if (item.entityType == "Kpi" || item.actionType.startsWith("Kpi")) {
+                startActivity(Intent(this, AdminCrmKpiActivity::class.java))
+            } else {
+                Toast.makeText(this, "${item.title}\n${item.subtitle}", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.recyclerLiveActivities.apply {
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@ManagerCrmDashboardActivity)
+            adapter = liveActivityAdapter
+            isNestedScrollingEnabled = false
+        }
+
+        binding.buttonOpenLiveActivityHistory.setOnClickListener {
+            startActivity(Intent(this, TeamActivityHistoryActivity::class.java))
+        }
+    }
+
+    private fun setupLiveSignalR() {
+        signalRClient = SignalRClient(this)
+        signalRClient?.connect(
+            onTeamActivityReceived = { activity ->
+                runOnUiThread {
+                    binding.textEmptyLiveActivities.visibility = View.GONE
+                    binding.recyclerLiveActivities.visibility = View.VISIBLE
+                    liveActivityAdapter.prependItem(activity)
+                    binding.recyclerLiveActivities.scrollToPosition(0)
+
+                    binding.textLiveCountBadge.text = "NEW ACTIVITY"
+                    binding.textLiveCountBadge.postDelayed({
+                        binding.textLiveCountBadge.text = "REAL-TIME"
+                    }, 4000)
+
+                    // Silently refresh metrics in background
+                    viewModel.loadManagerCrmDashboardAnalytics(fromDate = fromDateStr, toDate = toDateStr)
+                }
+            }
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        signalRClient?.disconnect()
     }
 
     private fun safeParseColor(hex: String?, defaultColor: Int): Int {

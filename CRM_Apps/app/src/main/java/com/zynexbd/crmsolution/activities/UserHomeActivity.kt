@@ -382,24 +382,18 @@ class UserHomeActivity : BaseActivity() {
     }
 
     private fun hasLocationPermission(): Boolean {
-        val fine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        val coarse = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-        return fine == PackageManager.PERMISSION_GRANTED || coarse == PackageManager.PERMISSION_GRANTED
+        return true // Bypass location check as location service is temporarily disabled
     }
 
     private fun isGpsEnabled(): Boolean {
-        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        return true // Bypass GPS provider check as location service is temporarily disabled
     }
 
     /**
-     * Request standard runtime permissions (Location, Camera, Notifications) sequentially via Android OS popups.
+     * Request standard runtime permissions (Camera, Notifications) without forcing location.
      */
     private fun requestAppPermissions() {
         val permissionsToRequest = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.CAMERA
         )
 
@@ -419,45 +413,19 @@ class UserHomeActivity : BaseActivity() {
     }
 
     private fun handlePermissionsResult(permissions: Map<String, Boolean>) {
-        if (hasLocationPermission()) {
-            dismissBlockingDialog()
-            checkBackgroundLocation()
-        } else {
-            showPermissionDeniedDialog()
-        }
+        dismissBlockingDialog()
     }
 
     private fun checkBackgroundLocation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {
-            val prefs = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE)
-            if (!prefs.getBoolean("bg_location_prompted", false)) {
-                prefs.edit().putBoolean("bg_location_prompted", true).apply()
-                backgroundLocationLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                return
-            }
-        }
-        checkGpsAndStartService()
+        // Background location service disabled as requested
     }
 
     private fun checkGpsAndStartService() {
-        if (!isGpsEnabled()) {
-            requestEnableGps()
-            return
-        }
-        dismissBlockingDialog()
-        startTrackingServiceSafely()
-        requestBatteryExemption()
-        requestAutoStartPermission()
+        // Background location service disabled as requested
     }
 
     private fun startTrackingServiceSafely() {
-        try {
-            ContextCompat.startForegroundService(this, Intent(this, TrackingForegroundService::class.java))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to start tracking service", e)
-        }
+        // Background location service disabled as requested
     }
 
     private fun requestBatteryExemption() {

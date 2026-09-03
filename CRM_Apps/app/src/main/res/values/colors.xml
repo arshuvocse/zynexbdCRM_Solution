@@ -39,6 +39,7 @@
     <color name="glass_card_stroke">#E2E8F0</color>
     <color name="glass_card_glow">#156366F1</color>
     <color name="card_elevated_bg">#FFFFFF</color>
+    <color name="surface_card">#FFFFFF</color>
 
     <color name="input_bg">#F8FAFC</color>
     <color name="input_stroke">#CBD5E1</color>

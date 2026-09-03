@@ -96,11 +96,6 @@ class CrmRepository(context: Context) {
 
     suspend fun getProductServices(activeOnly: Boolean = true): Response<List<CrmProductService>> = api.getCrmProductServices(activeOnly)
 
-    suspend fun createProductService(request: CreateCrmProductServiceRequest): Response<CrmProductService> = api.createCrmProductService(request)
-
-    suspend fun updateProductService(id: Int, request: UpdateCrmProductServiceRequest): Response<CrmProductService> = api.updateCrmProductService(id, request)
-
-    suspend fun deleteProductService(id: Int): Response<Unit> = api.deleteCrmProductService(id)
 
     suspend fun getLeadSources(activeOnly: Boolean = true): Response<List<CrmLeadSource>> = api.getCrmLeadSources(activeOnly)
 
@@ -261,4 +256,36 @@ class CrmRepository(context: Context) {
     ): Response<CrmReportResponse> = api.getUserCrmReports(
         reportType, fromDate, toDate, productServiceId, leadStatus, leadSourceId, search, pageNumber, pageSize
     )
+
+    // =========================================================================
+    // DYNAMIC BRANDING & PRODUCT/SERVICE SELECT2 MANAGEMENT
+    // =========================================================================
+    suspend fun getCompanyBranding(): Response<ApiResponse<CompanyBranding>> =
+        api.getCompanyBranding()
+
+    suspend fun getProductServices(
+        search: String? = null,
+        activeOnly: Boolean? = true,
+        pageNumber: Int = 1,
+        pageSize: Int = 50
+    ): Response<ApiResponse<CrmProductServiceListResponse>> =
+        api.getProductServices(search, activeOnly, pageNumber, pageSize)
+
+    suspend fun createProductService(request: CreateCrmProductServiceRequest): Response<ApiResponse<CrmProductService>> =
+        api.createProductService(request)
+
+    suspend fun updateProductService(id: Int, request: UpdateCrmProductServiceRequest): Response<ApiResponse<CrmProductService>> =
+        api.updateProductService(id, request)
+
+    suspend fun toggleProductServiceStatus(id: Int, isActive: Boolean): Response<ApiResponse<CrmProductService>> =
+        api.toggleProductServiceStatus(id, CrmProductServiceStatusRequest(isActive))
+
+    suspend fun getLiveTeamActivities(
+        fromDate: String? = null,
+        toDate: String? = null,
+        actionType: String? = null,
+        userId: Int? = null,
+        limit: Int = 100
+    ): Response<List<com.zynexbd.crmsolution.models.LiveTeamActivity>> =
+        api.getLiveTeamActivities(fromDate, toDate, actionType, userId, limit)
 }

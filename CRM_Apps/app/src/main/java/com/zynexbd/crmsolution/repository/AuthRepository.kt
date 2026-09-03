@@ -33,11 +33,12 @@ class AuthRepository(private val context: Context) {
                     val fullName = target.name ?: body?.name ?: uname
                     val companyId = target.companyId ?: body?.companyId
                     val companyName = target.companyName ?: body?.companyName
+                    val companyLogoUrl = target.companyLogoUrl ?: body?.companyLogoUrl
                     val officeLocationId = target.officeLocationId ?: body?.officeLocationId
                     val officeLocationName = target.officeLocationName ?: body?.officeLocationName
                     val authorizedOffices = target.authorizedOfficeLocations ?: body?.authorizedOfficeLocations
 
-                    com.zynexbd.crmsolution.utils.AppLogger.i("AuthRepo", "Login SUCCESS for user='$uname' (ID: $userId, Role: $role, Company: $companyName)")
+                    com.zynexbd.crmsolution.utils.AppLogger.i("AuthRepo", "Login SUCCESS for user='$uname' (ID: $userId, Role: $role, Company: $companyName, Logo: $companyLogoUrl)")
 
                     session.saveSession(
                         token = token,
@@ -47,6 +48,7 @@ class AuthRepository(private val context: Context) {
                         fullName = fullName,
                         companyId = companyId,
                         companyName = companyName,
+                        companyLogoUrl = companyLogoUrl,
                         officeLocationId = officeLocationId,
                         officeLocationName = officeLocationName,
                         authorizedOfficeLocations = authorizedOffices
@@ -87,7 +89,14 @@ class AuthRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             com.zynexbd.crmsolution.utils.AppLogger.e("AuthRepo", "Login exception: ${e.javaClass.simpleName} - ${e.message}", e)
-            AuthResult.Error(e.message ?: "Network error.")
+            val errorMsg = when (e) {
+                is java.net.ConnectException -> "সার্ভারে কানেক্ট করা যায়নি (Connection Refused)। আইপি/পোর্ট ঠিক আছে কিনা ও সার্ভার চালু আছে কিনা চেক করুন।"
+                is java.net.UnknownHostException -> "সার্ভার হোস্ট পাওয়া যায়নি (Unknown Host)। সার্ভার URL সঠিক কিনা তা যাচাই করুন।"
+                is java.net.SocketTimeoutException -> "সার্ভার রেসপন্স দিতে সময় বেশি নিচ্ছে (Connection Timeout)।"
+                is IllegalArgumentException -> "সার্ভার Base URL সঠিক নয়। অ্যাপ লোগোতে লং-প্রেস করে সঠিক URL সেট করুন।"
+                else -> e.localizedMessage ?: "নেটওয়ার্ক কানেকশন এরর।"
+            }
+            AuthResult.Error(errorMsg)
         }
     }
 

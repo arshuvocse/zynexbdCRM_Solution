@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.activities
+package com.zynexbd.crmsolution.activities
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -111,13 +111,11 @@ class PunchAttendanceActivity : BaseActivity() {
     }
 
     private fun hasPermissions(): Boolean {
-        val camera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        val location = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        return camera && location
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermissions() {
-        permissionRequest.launch(arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION))
+        permissionRequest.launch(arrayOf(Manifest.permission.CAMERA))
     }
 
     private fun fetchLocation() {
@@ -383,22 +381,16 @@ class PunchAttendanceActivity : BaseActivity() {
 
     private fun saveBitmapToFile(bitmap: Bitmap) {
         val file = capturedFile ?: File(cacheDir, "selfie_${System.currentTimeMillis()}.jpg").also { capturedFile = it }
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        }
+        com.zynexbd.crmsolution.utils.ImageCompressor.compressToFile(bitmap, file, 250 * 1024)
     }
 
     private fun submit(isPunchIn: Boolean) {
         val file = capturedFile
-        val lat = currentLatitude
-        val lng = currentLongitude
+        val lat = currentLatitude ?: 0.0
+        val lng = currentLongitude ?: 0.0
 
         if (file == null) {
             Toast.makeText(this, "অনুগ্রহ করে প্রথমে একটি সেলফি তুলুন।", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (lat == null || lng == null) {
-            Toast.makeText(this, "লোকেশন এখনো প্রস্তুত নয়। একটু অপেক্ষা করুন।", Toast.LENGTH_SHORT).show()
             return
         }
 

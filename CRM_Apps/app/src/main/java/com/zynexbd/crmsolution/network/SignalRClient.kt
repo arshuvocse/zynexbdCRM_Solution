@@ -28,6 +28,7 @@ class SignalRClient(private val context: Context) {
     fun connect(
         onLocationUpdated: ((LocationResponse) -> Unit)? = null,
         onNotificationReceived: ((NotificationItem) -> Unit)? = null,
+        onTeamActivityReceived: ((com.zynexbd.crmsolution.models.LiveTeamActivity) -> Unit)? = null,
         onStateChange: ((Boolean) -> Unit)? = null
     ) {
         val token = session.getToken() ?: return
@@ -59,6 +60,15 @@ class SignalRClient(private val context: Context) {
                 com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "Error handling ReceiveNotification", e)
             }
         }, NotificationItem::class.java)
+
+        connection.on("ReceiveTeamActivity", { activity ->
+            try {
+                com.zynexbd.crmsolution.utils.AppLogger.d(TAG, "SignalR ReceiveTeamActivity: ${activity.title}")
+                onTeamActivityReceived?.invoke(activity)
+            } catch (e: Exception) {
+                com.zynexbd.crmsolution.utils.AppLogger.e(TAG, "Error handling ReceiveTeamActivity", e)
+            }
+        }, com.zynexbd.crmsolution.models.LiveTeamActivity::class.java)
 
         connection.on("ForceLogout", { reason ->
             try {

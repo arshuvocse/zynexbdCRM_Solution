@@ -87,4 +87,7 @@ public interface ICrmService
 
     Task<List<CrmFollowUpItemDto>> GetUserFollowUpsAsync(int companyId, int userId, string? filterType = null, DateTime? fromDate = null, DateTime? toDate = null);
     Task<List<UserKpiPerformanceResponse>> GetUserKpiPerformanceAsync(int companyId, int userId);
+
+    // Real-Time Live Team Activity Feed
+    Task<List<LiveTeamActivityDto>> GetLiveTeamActivitiesAsync(int companyId, CrmOfficeScope officeScope, DateTime? fromDate = null, DateTime? toDate = null, string? actionType = null, int? userId = null, int limit = 100);
 }

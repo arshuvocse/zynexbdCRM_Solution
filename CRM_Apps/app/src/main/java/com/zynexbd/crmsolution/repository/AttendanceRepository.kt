@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.repository
+package com.zynexbd.crmsolution.repository
 
 import android.content.Context
 import com.zynexbd.crmsolution.models.AttendanceResponse
@@ -20,8 +20,14 @@ class AttendanceRepository(context: Context) {
         submit(selfieFile, latitude, longitude, isPunchIn = false)
 
     private suspend fun submit(selfieFile: File, latitude: Double, longitude: Double, isPunchIn: Boolean): Result<AttendanceResponse> = runCatching {
+        val finalFile = if (selfieFile.length() > com.zynexbd.crmsolution.utils.ImageCompressor.MAX_IMAGE_SIZE_BYTES) {
+            com.zynexbd.crmsolution.utils.ImageCompressor.compressFile(selfieFile, targetMaxBytes = com.zynexbd.crmsolution.utils.ImageCompressor.MAX_IMAGE_SIZE_BYTES)
+        } else {
+            selfieFile
+        }
+
         val selfiePart = MultipartBody.Part.createFormData(
-            "Selfie", selfieFile.name, selfieFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            "Selfie", finalFile.name, finalFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
         )
         val latPart = latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val lngPart = longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull())

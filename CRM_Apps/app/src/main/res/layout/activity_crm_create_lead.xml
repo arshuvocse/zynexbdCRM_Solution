@@ -186,13 +186,54 @@
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/spinnerProductService"
+            <LinearLayout
+                android:id="@+id/layoutSelectProductService"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/bg_input_field"
-                android:paddingHorizontal="10dp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_route_fork"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/textSelectedProductService"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Search &amp; Select Product or Service..."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/buttonClearSelectedProduct"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_cross"
+                    android:visibility="gone"
+                    app:tint="@color/text_secondary" />
+
+                <ImageView
+                    android:id="@+id/iconDropdownProduct"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_expand_more"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <!-- Lead Source Spinner -->
             <TextView

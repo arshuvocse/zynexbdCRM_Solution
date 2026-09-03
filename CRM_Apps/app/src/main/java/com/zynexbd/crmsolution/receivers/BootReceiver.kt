@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.receivers
+package com.zynexbd.crmsolution.receivers
 
 import android.Manifest
 import android.content.BroadcastReceiver
@@ -26,11 +26,7 @@ class BootReceiver : BroadcastReceiver() {
             NotificationSyncWorker.enqueuePeriodicSync(context)
         }
 
-        // Restart tracking service if user role and location permission granted
-        if (session.isLoggedIn() && session.isUser() && hasLocationPermission(context)) {
-            val serviceIntent = Intent(context, TrackingForegroundService::class.java)
-            ContextCompat.startForegroundService(context, serviceIntent)
-        }
+        // Tracking service disabled as requested
     }
 
     private fun hasLocationPermission(context: Context): Boolean {

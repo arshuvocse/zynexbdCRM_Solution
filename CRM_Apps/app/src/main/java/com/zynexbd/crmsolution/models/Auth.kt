@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.models
+package com.zynexbd.crmsolution.models
 
 import com.google.gson.annotations.SerializedName
 
@@ -23,6 +23,7 @@ data class LoginResponse(
     val role: String? = null,
     @SerializedName("companyId") val companyId: Int? = null,
     @SerializedName("companyName") val companyName: String? = null,
+    @SerializedName("companyLogoUrl") val companyLogoUrl: String? = null,
     @SerializedName("officeLocationId") val officeLocationId: Int? = null,
     @SerializedName("officeLocationName") val officeLocationName: String? = null,
     @SerializedName("authorizedOfficeLocations") val authorizedOfficeLocations: List<AuthorizedOfficeDto>? = null,

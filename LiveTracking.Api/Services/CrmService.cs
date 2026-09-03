@@ -5,16 +5,20 @@ using LiveTracking.Api.Data;
 using LiveTracking.Api.DTOs;
 using LiveTracking.Api.Models.CRM;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using LiveTracking.Api.Hubs;
 
 namespace LiveTracking.Api.Services;
 
 public class CrmService : ICrmService
 {
     private readonly LiveTrackingDbContext _db;
+    private readonly IHubContext<LocationHub> _hub;
 
-    public CrmService(LiveTrackingDbContext db)
+    public CrmService(LiveTrackingDbContext db, IHubContext<LocationHub> hub)
     {
         _db = db;
+        _hub = hub;
     }
 
     #region Authorization
@@ -1623,6 +1627,11 @@ public class CrmService : ICrmService
             NewValue = newValue,
             CreatedAtUtc = DateTime.UtcNow
         });
+
+        _ = Task.Run(async () =>
+        {
+            await BroadcastCrmActivityAsync(companyId, userId, action, entityType, entityId, oldValue, newValue);
+        });
     }
 
     private void LogStatusChangeIfNeeded(int companyId, int leadId, string previousStatus, string newStatus, int changedByUserId, string? remarks = null)
@@ -2254,4 +2263,295 @@ public class CrmService : ICrmService
 
     #endregion
 
+    #region Real-Time Live Team Activity Feed
+
+    public async Task BroadcastCrmActivityAsync(int companyId, int userId, string action, string entityType, int entityId, string? oldValue = null, string? newValue = null)
+    {
+        try
+        {
+            var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+            string userName = user != null ? (user.FullName.Length > 0 ? user.FullName : user.Username) : "Executive";
+            string userRole = user?.Role ?? "User";
+
+            string leadName = "";
+            int? targetLeadId = null;
+            if (entityType == "Lead")
+            {
+                var lead = await _db.CrmLeads.AsNoTracking().FirstOrDefaultAsync(l => l.LeadId == entityId);
+                leadName = lead?.LeadName ?? $"Lead #{entityId}";
+                targetLeadId = entityId;
+            }
+
+            string title;
+            string subtitle;
+            string badgeColor;
+
+            switch (action)
+            {
+                case "LeadCreated":
+                    title = $"{userName} created a new lead";
+                    subtitle = leadName;
+                    badgeColor = "#10B981"; // Emerald Green
+                    break;
+                case "FollowUpAdded":
+                    title = $"{userName} logged a follow-up";
+                    subtitle = string.IsNullOrWhiteSpace(newValue) ? leadName : $"{leadName} • {newValue}";
+                    badgeColor = "#3B82F6"; // Blue
+                    break;
+                case "StatusChanged":
+                    title = $"{userName} updated lead status";
+                    subtitle = $"{leadName}: {oldValue} ➔ {newValue}";
+                    badgeColor = "#8B5CF6"; // Purple
+                    break;
+                case "LeadAssigned":
+                case "LeadReassigned":
+                    title = $"{userName} assigned a lead";
+                    subtitle = $"{leadName} ➔ {newValue}";
+                    badgeColor = "#F59E0B"; // Amber
+                    break;
+                case "RemarkAdded":
+                    title = $"{userName} added a note";
+                    subtitle = $"{leadName} • {newValue}";
+                    badgeColor = "#64748B"; // Slate
+                    break;
+                case "KpiCreated":
+                    title = $"{userName} set up KPI targets";
+                    subtitle = string.IsNullOrWhiteSpace(newValue) ? "KPI Target configured" : newValue;
+                    badgeColor = "#EC4899"; // Pink
+                    break;
+                case "KpiUpdated":
+                    title = $"{userName} updated KPI targets";
+                    subtitle = string.IsNullOrWhiteSpace(newValue) ? "KPI Target updated" : newValue;
+                    badgeColor = "#EC4899"; // Pink
+                    break;
+                default:
+                    title = $"{userName} performed {action}";
+                    subtitle = leadName.Length > 0 ? leadName : (newValue ?? "");
+                    badgeColor = "#2563EB";
+                    break;
+            }
+
+            var dto = new LiveTeamActivityDto(
+                0,
+                companyId,
+                userId,
+                userName,
+                userRole,
+                action,
+                entityType,
+                title,
+                subtitle,
+                badgeColor,
+                targetLeadId,
+                DateTime.UtcNow
+            );
+
+            await _hub.Clients.Group(LocationHub.CompanyAdminsGroup(companyId)).SendAsync("ReceiveTeamActivity", dto);
+            await _hub.Clients.Group(LocationHub.CompanyAllGroup(companyId)).SendAsync("ReceiveTeamActivity", dto);
+        }
+        catch { /* Fire-and-forget safeguard */ }
+    }
+
+    public async Task<List<LiveTeamActivityDto>> GetLiveTeamActivitiesAsync(
+        int companyId,
+        CrmOfficeScope officeScope,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        string? actionType = null,
+        int? userId = null,
+        int limit = 100)
+    {
+        var logsQuery = _db.CrmAuditLogs.AsNoTracking()
+            .Include(a => a.User)
+            .Where(a => a.CompanyId == companyId);
+
+        if (fromDate.HasValue)
+        {
+            var utcFrom = fromDate.Value.Kind == DateTimeKind.Utc ? fromDate.Value : DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc);
+            logsQuery = logsQuery.Where(a => a.CreatedAtUtc >= utcFrom);
+        }
+
+        if (toDate.HasValue)
+        {
+            var utcTo = toDate.Value.Kind == DateTimeKind.Utc ? toDate.Value : DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc);
+            logsQuery = logsQuery.Where(a => a.CreatedAtUtc <= utcTo);
+        }
+
+        if (!string.IsNullOrWhiteSpace(actionType))
+        {
+            logsQuery = logsQuery.Where(a => a.Action == actionType);
+        }
+
+        if (userId.HasValue && userId.Value > 0)
+        {
+            logsQuery = logsQuery.Where(a => a.UserId == userId.Value);
+        }
+
+        if (!officeScope.IsUnrestricted && officeScope.OfficeIds.Count > 0)
+        {
+            var allowedUserIds = await _db.Users.AsNoTracking()
+                .Where(u => u.CompanyId == companyId && u.OfficeLocationId.HasValue && officeScope.OfficeIds.Contains(u.OfficeLocationId.Value))
+                .Select(u => u.UserId)
+                .ToListAsync();
+            logsQuery = logsQuery.Where(a => allowedUserIds.Contains(a.UserId));
+        }
+
+        var recentLogs = await logsQuery
+            .OrderByDescending(a => a.CreatedAtUtc)
+            .Take(limit)
+            .ToListAsync();
+
+        var leadIds = recentLogs.Where(l => l.EntityType == "Lead").Select(l => l.EntityId).Distinct().ToList();
+        var leadNames = await _db.CrmLeads.AsNoTracking()
+            .Where(l => leadIds.Contains(l.LeadId))
+            .ToDictionaryAsync(l => l.LeadId, l => l.LeadName);
+
+        var result = new List<LiveTeamActivityDto>();
+        foreach (var log in recentLogs)
+        {
+            string userName = log.User != null ? (log.User.FullName.Length > 0 ? log.User.FullName : log.User.Username) : "Executive";
+            string userRole = log.User?.Role ?? "User";
+
+            string leadName = "";
+            int? targetLeadId = null;
+            if (log.EntityType == "Lead")
+            {
+                leadName = leadNames.TryGetValue(log.EntityId, out var ln) ? ln : $"Lead #{log.EntityId}";
+                targetLeadId = log.EntityId;
+            }
+
+            string title;
+            string subtitle;
+            string badgeColor;
+
+            switch (log.Action)
+            {
+                case "LeadCreated":
+                    title = $"{userName} created a new lead";
+                    subtitle = leadName;
+                    badgeColor = "#10B981";
+                    break;
+                case "FollowUpAdded":
+                    title = $"{userName} logged a follow-up";
+                    subtitle = string.IsNullOrWhiteSpace(log.NewValue) ? leadName : $"{leadName} • {log.NewValue}";
+                    badgeColor = "#3B82F6";
+                    break;
+                case "StatusChanged":
+                    title = $"{userName} updated lead status";
+                    subtitle = $"{leadName}: {log.OldValue} ➔ {log.NewValue}";
+                    badgeColor = "#8B5CF6";
+                    break;
+                case "LeadAssigned":
+                case "LeadReassigned":
+                    title = $"{userName} assigned a lead";
+                    subtitle = $"{leadName} ➔ {log.NewValue}";
+                    badgeColor = "#F59E0B";
+                    break;
+                case "RemarkAdded":
+                    title = $"{userName} added a note";
+                    subtitle = $"{leadName} • {log.NewValue}";
+                    badgeColor = "#64748B";
+                    break;
+                case "KpiCreated":
+                    title = $"{userName} set up KPI targets";
+                    subtitle = string.IsNullOrWhiteSpace(log.NewValue) ? "KPI Target configured" : log.NewValue;
+                    badgeColor = "#EC4899";
+                    break;
+                case "KpiUpdated":
+                    title = $"{userName} updated KPI targets";
+                    subtitle = string.IsNullOrWhiteSpace(log.NewValue) ? "KPI Target updated" : log.NewValue;
+                    badgeColor = "#EC4899";
+                    break;
+                default:
+                    title = $"{userName} performed {log.Action}";
+                    subtitle = leadName.Length > 0 ? leadName : (log.NewValue ?? "");
+                    badgeColor = "#2563EB";
+                    break;
+            }
+
+            result.Add(new LiveTeamActivityDto(
+                log.AuditLogId,
+                log.CompanyId,
+                log.UserId,
+                userName,
+                userRole,
+                log.Action,
+                log.EntityType,
+                title,
+                subtitle,
+                badgeColor,
+                targetLeadId,
+                log.CreatedAtUtc
+            ));
+        }
+
+        // Merge customer visits if matching filter
+        if (string.IsNullOrWhiteSpace(actionType) || actionType == "CustomerVisit")
+        {
+            var visitsQuery = _db.CustomerVisits.AsNoTracking()
+                .Include(v => v.Customer)
+                .Include(v => v.User)
+                .Where(v => v.User != null && v.User.CompanyId == companyId);
+
+            if (fromDate.HasValue)
+            {
+                var utcFrom = fromDate.Value.Kind == DateTimeKind.Utc ? fromDate.Value : DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc);
+                visitsQuery = visitsQuery.Where(v => v.VisitDate >= utcFrom);
+            }
+
+            if (toDate.HasValue)
+            {
+                var utcTo = toDate.Value.Kind == DateTimeKind.Utc ? toDate.Value : DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc);
+                visitsQuery = visitsQuery.Where(v => v.VisitDate <= utcTo);
+            }
+
+            if (userId.HasValue && userId.Value > 0)
+            {
+                visitsQuery = visitsQuery.Where(v => v.UserId == userId.Value);
+            }
+
+            if (!officeScope.IsUnrestricted && officeScope.OfficeIds.Count > 0)
+            {
+                var allowedUserIds = await _db.Users.AsNoTracking()
+                    .Where(u => u.CompanyId == companyId && u.OfficeLocationId.HasValue && officeScope.OfficeIds.Contains(u.OfficeLocationId.Value))
+                    .Select(u => u.UserId)
+                    .ToListAsync();
+                visitsQuery = visitsQuery.Where(v => allowedUserIds.Contains(v.UserId));
+            }
+
+            var recentVisits = await visitsQuery
+                .OrderByDescending(v => v.VisitDate)
+                .Take(limit / 2)
+                .ToListAsync();
+
+            foreach (var v in recentVisits)
+            {
+                string userName = v.User != null ? (v.User.FullName.Length > 0 ? v.User.FullName : v.User.Username) : "Officer";
+                string userRole = v.User?.Role ?? "User";
+                string customerName = v.Customer?.Name ?? "Customer";
+                string visitSubtitle = string.IsNullOrWhiteSpace(v.Remarks)
+                    ? $"{customerName} • {v.VisitStatus}"
+                    : $"{customerName} • {v.VisitStatus} • {v.Remarks}";
+
+                result.Add(new LiveTeamActivityDto(
+                    (int)(v.VisitId % int.MaxValue) + 500000,
+                    companyId,
+                    v.UserId,
+                    userName,
+                    userRole,
+                    "CustomerVisit",
+                    "CustomerVisit",
+                    $"{userName} recorded customer visit",
+                    visitSubtitle,
+                    "#EA580C", // Orange
+                    null,
+                    v.VisitDate
+                ));
+            }
+        }
+
+        return result.OrderByDescending(r => r.CreatedAtUtc).Take(limit).ToList();
+    }
+
+    #endregion
 }

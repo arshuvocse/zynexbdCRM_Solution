@@ -736,8 +736,7 @@ public class AttendanceController : ControllerBase
     {
         if (file == null || file.Length == 0) return null;
 
-        var webRoot = Path.Combine(_env.ContentRootPath, "wwwroot");
-        var uploadsDir = Path.Combine(webRoot, "uploads", "selfies");
+        var uploadsDir = Path.Combine(_env.ContentRootPath, "uploads", "selfies");
         if (!Directory.Exists(uploadsDir))
         {
             Directory.CreateDirectory(uploadsDir);
@@ -757,13 +756,13 @@ public class AttendanceController : ControllerBase
         // Duplicate to secondary fallback locations to ensure accessibility across hosting models
         try
         {
-            var altDir1 = Path.Combine(_env.ContentRootPath, "uploads", "selfies");
+            var altDir1 = Path.Combine(AppContext.BaseDirectory, "uploads", "selfies");
             if (!Directory.Exists(altDir1)) Directory.CreateDirectory(altDir1);
-            System.IO.File.Copy(filePath, Path.Combine(altDir1, fileName), true);
+            if (altDir1 != uploadsDir) System.IO.File.Copy(filePath, Path.Combine(altDir1, fileName), true);
 
-            var altDir2 = Path.Combine(AppContext.BaseDirectory, "wwwroot", "uploads", "selfies");
+            var altDir2 = Path.Combine(Directory.GetCurrentDirectory(), "uploads", "selfies");
             if (!Directory.Exists(altDir2)) Directory.CreateDirectory(altDir2);
-            System.IO.File.Copy(filePath, Path.Combine(altDir2, fileName), true);
+            if (altDir2 != uploadsDir && altDir2 != altDir1) System.IO.File.Copy(filePath, Path.Combine(altDir2, fileName), true);
         }
         catch { }
 

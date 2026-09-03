@@ -105,6 +105,7 @@ public class AuthController : ControllerBase
                 user.Role,
                 user.CompanyId,
                 user.Company?.CompanyName,
+                user.Company?.LogoUrl,
                 user.OfficeLocationId,
                 officeLocationName,
                 authorizedOffices

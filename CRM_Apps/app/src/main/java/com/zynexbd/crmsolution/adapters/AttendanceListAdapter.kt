@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.adapters
+package com.zynexbd.crmsolution.adapters
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -87,6 +87,7 @@ class AttendanceListAdapter(private val showUserName: Boolean = false) :
 
             val rawStatus = item.status ?: "On Time"
             val status = formatAttendanceStatus(rawStatus)
+            textStatus.setTextColor(android.graphics.Color.WHITE)
             when {
                 status.contains("On Time", ignoreCase = true) || status.contains("Completed", ignoreCase = true) -> {
                     textStatus.text = "🟢 $status"

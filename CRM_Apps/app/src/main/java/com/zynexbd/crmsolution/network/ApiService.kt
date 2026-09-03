@@ -540,4 +540,37 @@ interface ApiService {
 
     @GET("api/crm/user/lead-sources")
     suspend fun getCrmUserActiveLeadSources(): Response<List<CrmLeadSource>>
+
+    // =========================================================================
+    // DYNAMIC COMPANY BRANDING & PRODUCT/SERVICE SELECT2 MANAGEMENT
+    // =========================================================================
+    @GET("api/crm/company/branding")
+    suspend fun getCompanyBranding(): Response<ApiResponse<CompanyBranding>>
+
+    @GET("api/crm/products-services")
+    suspend fun getProductServices(
+        @Query("search") search: String? = null,
+        @Query("activeOnly") activeOnly: Boolean? = true,
+        @Query("pageNumber") pageNumber: Int = 1,
+        @Query("pageSize") pageSize: Int = 50
+    ): Response<ApiResponse<CrmProductServiceListResponse>>
+
+    @POST("api/crm/products-services")
+    suspend fun createProductService(@Body request: CreateCrmProductServiceRequest): Response<ApiResponse<CrmProductService>>
+
+    @PUT("api/crm/products-services/{id}")
+    suspend fun updateProductService(@Path("id") id: Int, @Body request: UpdateCrmProductServiceRequest): Response<ApiResponse<CrmProductService>>
+
+    @PATCH("api/crm/products-services/{id}/status")
+    suspend fun toggleProductServiceStatus(@Path("id") id: Int, @Body request: CrmProductServiceStatusRequest): Response<ApiResponse<CrmProductService>>
+
+    // Live Team Activity Feed
+    @GET("api/crm/dashboard/live-activities")
+    suspend fun getLiveTeamActivities(
+        @Query("fromDate") fromDate: String? = null,
+        @Query("toDate") toDate: String? = null,
+        @Query("actionType") actionType: String? = null,
+        @Query("userId") userId: Int? = null,
+        @Query("limit") limit: Int = 100
+    ): Response<List<com.zynexbd.crmsolution.models.LiveTeamActivity>>
 }

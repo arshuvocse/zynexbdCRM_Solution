@@ -5,6 +5,8 @@ using LiveTracking.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using LiveTracking.Api.Hubs;
 
 namespace LiveTracking.Api.Controllers;
 
@@ -15,11 +17,13 @@ public class CustomerVisitsController : ControllerBase
 {
     private readonly LiveTrackingDbContext _db;
     private readonly IWebHostEnvironment _env;
+    private readonly IHubContext<LocationHub> _hub;
 
-    public CustomerVisitsController(LiveTrackingDbContext db, IWebHostEnvironment env)
+    public CustomerVisitsController(LiveTrackingDbContext db, IWebHostEnvironment env, IHubContext<LocationHub> hub)
     {
         _db = db;
         _env = env;
+        _hub = hub;
     }
 
     private int GetCurrentUserId()
@@ -82,7 +86,7 @@ public class CustomerVisitsController : ControllerBase
             try
             {
                 byte[] bytes = Convert.FromBase64String(request.ShopPhotoBase64);
-                string uploadsFolder = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
+                string uploadsFolder = Path.Combine(_env.ContentRootPath, "uploads");
                 if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
                 string fileName = $"visit_{Guid.NewGuid()}_shop.jpg";
@@ -114,6 +118,39 @@ public class CustomerVisitsController : ControllerBase
         await _db.SaveChangesAsync();
 
         var user = await _db.Users.FindAsync(userId);
+
+        if (user != null && user.CompanyId.HasValue)
+        {
+            string userName = user.FullName.Length > 0 ? user.FullName : user.Username;
+            string visitSubtitle = string.IsNullOrWhiteSpace(visit.Remarks)
+                ? $"{customer.Name} • {visit.VisitStatus}"
+                : $"{customer.Name} • {visit.VisitStatus} • {visit.Remarks}";
+
+            var activityDto = new LiveTeamActivityDto(
+                (int)(visit.VisitId % int.MaxValue) + 500000,
+                user.CompanyId.Value,
+                user.UserId,
+                userName,
+                user.Role,
+                "CustomerVisit",
+                "CustomerVisit",
+                $"{userName} recorded customer visit",
+                visitSubtitle,
+                "#EA580C",
+                null,
+                DateTime.UtcNow
+            );
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _hub.Clients.Group(LocationHub.CompanyAdminsGroup(user.CompanyId.Value)).SendAsync("ReceiveTeamActivity", activityDto);
+                    await _hub.Clients.Group(LocationHub.CompanyAllGroup(user.CompanyId.Value)).SendAsync("ReceiveTeamActivity", activityDto);
+                }
+                catch { }
+            });
+        }
 
         return Ok(new CustomerVisitResponse
         {

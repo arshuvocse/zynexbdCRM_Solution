@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.services
+package com.zynexbd.crmsolution.services
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -58,20 +58,9 @@ class TrackingForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (!hasLocationPermission()) {
-            Log.w(TAG, "Location permission not granted; stopping service without starting foreground state.")
-            stopSelf()
-            return START_NOT_STICKY
-        }
-        try {
-            startForeground(Constants.NOTIFICATION_ID, buildNotification())
-        } catch (e: Exception) {
-            Log.e(TAG, "startForeground failed", e)
-            stopSelf()
-            return START_NOT_STICKY
-        }
-        startLocationUpdates()
-        return START_STICKY
+        Log.i(TAG, "TrackingForegroundService is temporarily disabled.")
+        stopSelf()
+        return START_NOT_STICKY
     }
 
     private fun hasLocationPermission(): Boolean {

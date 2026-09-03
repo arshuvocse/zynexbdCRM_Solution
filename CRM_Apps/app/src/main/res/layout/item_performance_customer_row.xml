@@ -17,11 +17,11 @@
             android:id="@+id/textCustomerBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_status_active_pill"
-            android:paddingHorizontal="6dp"
-            android:paddingVertical="2dp"
+            android:background="@drawable/bg_badge_purple"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
             android:text="CUSTOMER"
-            android:textColor="#7C3AED"
+            android:textColor="#FFFFFF"
             android:textSize="10sp"
             android:textStyle="bold" />
 

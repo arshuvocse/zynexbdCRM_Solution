@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
+import com.zynexbd.crmsolution.R
 import com.zynexbd.crmsolution.databinding.ActivityUserCrmDashboardBinding
 import com.zynexbd.crmsolution.models.ChartBarEntry
 import com.zynexbd.crmsolution.models.ChartDonutSlice
+import com.zynexbd.crmsolution.utils.SessionManager
 import com.zynexbd.crmsolution.viewmodel.CrmViewModel
 import com.zynexbd.crmsolution.views.BarChartView
 import com.zynexbd.crmsolution.views.DonutChartView
@@ -20,6 +22,7 @@ class UserCrmDashboardActivity : BaseActivity() {
 
     private lateinit var binding: ActivityUserCrmDashboardBinding
     private lateinit var viewModel: CrmViewModel
+    private lateinit var session: SessionManager
 
     private var fromDateStr: String? = null
     private var toDateStr: String? = null
@@ -30,6 +33,7 @@ class UserCrmDashboardActivity : BaseActivity() {
         binding = ActivityUserCrmDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        session = SessionManager(this)
         viewModel = ViewModelProvider(this)[CrmViewModel::class.java]
 
         setupUI()
@@ -74,6 +78,46 @@ class UserCrmDashboardActivity : BaseActivity() {
 
         binding.buttonViewFullKpi.setOnClickListener {
             startActivity(Intent(this, UserCrmKpiActivity::class.java))
+        }
+
+        setupCompanyBrandingCard()
+    }
+
+    private fun setupCompanyBrandingCard() {
+        val userName = session.getFullName() ?: session.getUsername() ?: "User"
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val timeGreeting = when {
+            hour < 12 -> "Good Morning"
+            hour < 17 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+        binding.textUserGreeting.text = "$timeGreeting, $userName"
+        binding.textCompanyName.text = session.getCompanyName() ?: "CRM SOLUTION"
+        binding.textRoleBadge.text = (session.getRole() ?: "USER").uppercase()
+
+        val logoUrl = session.getCompanyLogoUrl()
+        loadBrandingLogo(logoUrl)
+
+        viewModel.loadCompanyBranding { branding ->
+            if (branding != null) {
+                session.saveCompanyBranding(branding.companyName, branding.logoUrl)
+                binding.textCompanyName.text = branding.companyName
+                loadBrandingLogo(branding.logoUrl)
+            }
+        }
+    }
+
+    private fun loadBrandingLogo(logoUrl: String?) {
+        if (!logoUrl.isNullOrBlank()) {
+            val fullUrl = if (logoUrl.startsWith("http")) logoUrl else session.getServerBaseUrl().trimEnd('/') + "/" + logoUrl.trimStart('/')
+            com.bumptech.glide.Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.ic_person_custom)
+                .error(R.drawable.ic_person_custom)
+                .circleCrop()
+                .into(binding.imageCompanyLogo)
+        } else {
+            binding.imageCompanyLogo.setImageResource(R.drawable.ic_person_custom)
         }
     }
 

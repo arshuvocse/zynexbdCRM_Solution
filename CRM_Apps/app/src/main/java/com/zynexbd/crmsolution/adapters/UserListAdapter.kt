@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.adapters
+package com.zynexbd.crmsolution.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -41,14 +41,13 @@ class UserListAdapter(
             val initial = displayName.trim().take(1).uppercase()
             textAvatarInitials.text = if (initial.isNotBlank()) initial else "U"
 
-            // Role Badge Styling
-            textRole.text = user.role
-            if (user.role.equals("Admin", ignoreCase = true)) {
-                textRole.setBackgroundResource(R.drawable.bg_role_admin_pill)
-                textRole.setTextColor(Color.parseColor("#4F46E5"))
-            } else {
-                textRole.setBackgroundResource(R.drawable.bg_role_user_pill)
-                textRole.setTextColor(Color.parseColor("#16A34A"))
+            // Role Badge Styling with solid vibrant pill and crisp white text
+            textRole.text = user.role.uppercase()
+            textRole.setTextColor(Color.WHITE)
+            when (user.role.lowercase()) {
+                "admin" -> textRole.setBackgroundResource(R.drawable.bg_role_admin_pill)
+                "manager" -> textRole.setBackgroundResource(R.drawable.bg_badge_primary)
+                else -> textRole.setBackgroundResource(R.drawable.bg_role_user_pill)
             }
 
             val officeLabel = if (user.role.equals("Admin", ignoreCase = true)) {

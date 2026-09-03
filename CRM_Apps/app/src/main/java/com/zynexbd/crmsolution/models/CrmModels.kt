@@ -37,6 +37,27 @@ data class UpdateCrmProductServiceRequest(
     val isActive: Boolean? = null
 )
 
+data class CrmProductServiceStatusRequest(
+    val isActive: Boolean
+)
+
+data class CrmProductServiceListResponse(
+    val items: List<CrmProductService> = emptyList(),
+    val totalCount: Int = 0,
+    val pageNumber: Int = 1,
+    val pageSize: Int = 50
+) : Serializable
+
+data class CompanyBranding(
+    val companyId: Int = 0,
+    val companyName: String = "",
+    val companyCode: String = "",
+    val logoUrl: String? = null,
+    val contactPhone: String? = null,
+    val contactEmail: String? = null,
+    val contactPerson: String? = null
+) : Serializable
+
 data class CrmLeadSource(
     val leadSourceId: Int = 0,
     val companyId: Int = 0,

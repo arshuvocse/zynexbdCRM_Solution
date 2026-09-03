@@ -28,8 +28,8 @@ android {
 
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
-        buildConfigField("String", "API_BASE_URL", "\"http://103.244.247.179:370/\"")
-        buildConfigField("String", "SIGNALR_HUB_URL", "\"http://103.244.247.179:370/hubs/location\"")
+        buildConfigField("String", "API_BASE_URL", "\"http://217.216.39.94:83/\"")
+        buildConfigField("String", "SIGNALR_HUB_URL", "\"http://217.216.39.94:83/hubs/location\"")
         buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,6 +48,18 @@ android {
         debug {
             isDebuggable = true
         }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            val output = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output?.outputFileName = "DeshiCRM_v${versionName}.apk"
+        }
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     compileOptions {

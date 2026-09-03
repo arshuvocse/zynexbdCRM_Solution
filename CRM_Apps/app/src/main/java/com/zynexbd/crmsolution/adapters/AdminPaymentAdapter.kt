@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.adapters
+package com.zynexbd.crmsolution.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -34,6 +34,7 @@ class AdminPaymentAdapter : RecyclerView.Adapter<AdminPaymentAdapter.ViewHolder>
             textPhone.text = info.adminPhone ?: "N/A"
 
             // Days remaining color coding
+            chipStatus.setTextColor(Color.WHITE)
             when {
                 info.isExpired -> {
                     textDaysRemaining.text = "Expired"

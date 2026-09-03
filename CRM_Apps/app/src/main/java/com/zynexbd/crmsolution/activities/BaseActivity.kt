@@ -365,12 +365,58 @@ abstract class BaseActivity : AppCompatActivity() {
         val textNavTitle = headerView?.findViewById<TextView>(R.id.textNavTitle)
         val textNavSubtitle = headerView?.findViewById<TextView>(R.id.textNavSubtitle)
         val buttonNavLanguage = headerView?.findViewById<TextView>(R.id.buttonNavLanguage)
+        val imageNavLogo = headerView?.findViewById<ImageView>(R.id.imageNavLogo)
         val username = session.getUsername() ?: "admin"
+        val fullName = session.getFullName() ?: username
+        val companyName = session.getCompanyName() ?: "CRM SOLUTION"
+        val role = session.getRole() ?: "Admin"
         val isEn = LanguageManager.getLanguage(this) == LanguageManager.LANG_EN
-        textNavTitle?.text = "DESHICRM"
-        textNavSubtitle?.text = if (isEn) "Logged in as $username" else "লগইনকৃত ইউজার: $username"
+
+        textNavTitle?.text = companyName
+        textNavSubtitle?.text = if (isEn) "$fullName\nRole: $role" else "$fullName\nরোল: $role"
         buttonNavLanguage?.text = if (isEn) "🌐 EN 🇬🇧" else "🌐 বাংলা 🇧🇩"
         buttonNavLanguage?.setOnClickListener { showLanguageSelectionDialog() }
+
+        // Dynamic Company Logo Binding with Glide
+        val logoUrl = session.getCompanyLogoUrl()
+        if (imageNavLogo != null) {
+            if (!logoUrl.isNullOrBlank()) {
+                val fullUrl = if (logoUrl.startsWith("http")) logoUrl else session.getServerBaseUrl().trimEnd('/') + "/" + logoUrl.trimStart('/')
+                com.bumptech.glide.Glide.with(this)
+                    .load(fullUrl)
+                    .placeholder(R.drawable.ic_person_custom)
+                    .error(R.drawable.ic_person_custom)
+                    .circleCrop()
+                    .into(imageNavLogo)
+            } else {
+                imageNavLogo.setImageResource(R.drawable.ic_person_custom)
+            }
+        }
+
+        // Asynchronously refresh dynamic branding from server if logged in
+        if (session.isLoggedIn()) {
+            lifecycleScope.launch {
+                try {
+                    val resp = ApiClient.getApiService(this@BaseActivity).getCompanyBranding()
+                    if (resp.isSuccessful && resp.body()?.success == true) {
+                        val brand = resp.body()?.data
+                        if (brand != null) {
+                            session.saveCompanyBranding(brand.companyName, brand.logoUrl)
+                            textNavTitle?.text = brand.companyName
+                            if (!brand.logoUrl.isNullOrBlank() && imageNavLogo != null) {
+                                val fullUrl = if (brand.logoUrl.startsWith("http")) brand.logoUrl else session.getServerBaseUrl().trimEnd('/') + "/" + brand.logoUrl.trimStart('/')
+                                com.bumptech.glide.Glide.with(this@BaseActivity)
+                                    .load(fullUrl)
+                                    .placeholder(R.drawable.ic_person_custom)
+                                    .error(R.drawable.ic_person_custom)
+                                    .circleCrop()
+                                    .into(imageNavLogo)
+                            }
+                        }
+                    }
+                } catch (_: Exception) {}
+            }
+        }
 
         buttonMenu?.setOnClickListener {
             drawerLayout.openDrawer(androidx.core.view.GravityCompat.START)
@@ -429,6 +475,15 @@ abstract class BaseActivity : AppCompatActivity() {
                 R.id.nav_crm_kpi -> {
                     if (this !is AdminCrmKpiActivity) {
                         startActivity(Intent(this, AdminCrmKpiActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        })
+                        @Suppress("DEPRECATION")
+                        overridePendingTransition(0, 0)
+                    }
+                }
+                R.id.nav_crm_products -> {
+                    if (this !is ProductServiceManagementActivity) {
+                        startActivity(Intent(this, ProductServiceManagementActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         })
                         @Suppress("DEPRECATION")

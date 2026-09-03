@@ -22,6 +22,11 @@
             android:id="@+id/nav_crm_kpi"
             android:icon="@drawable/ic_reports_chart"
             android:title="🎯 CRM KPI Setup" />
+            
+        <item
+            android:id="@+id/nav_crm_products"
+            android:icon="@drawable/ic_route_fork"
+            android:title="📦 Products &amp; Services" />
 
         <item
             android:id="@+id/nav_users"

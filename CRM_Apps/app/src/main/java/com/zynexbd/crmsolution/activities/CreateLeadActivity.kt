@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.zynexbd.crmsolution.R
 import com.zynexbd.crmsolution.databinding.ActivityCrmCreateLeadBinding
 import com.zynexbd.crmsolution.models.CreateCrmLeadRequest
 import com.zynexbd.crmsolution.models.CrmLeadSource
@@ -19,6 +20,8 @@ class CreateLeadActivity : BaseActivity() {
     private lateinit var viewModel: CrmViewModel
     private var isManager: Boolean = false
     private var selectedFollowUpDate: String? = null
+
+    private var selectedProduct: CrmProductService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,14 @@ class CreateLeadActivity : BaseActivity() {
         val statusAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, statuses)
         binding.spinnerLeadStatus.adapter = statusAdapter
 
+        // Select2 Product/Service Picker
+        binding.layoutSelectProductService.setOnClickListener {
+            openSelect2ProductDialog()
+        }
+        binding.buttonClearSelectedProduct.setOnClickListener {
+            setSelectedProduct(null)
+        }
+
         // Date Picker for Next Follow Up
         binding.buttonPickDate.setOnClickListener { showDatePicker() }
         binding.textNextFollowUpDate.setOnClickListener { showDatePicker() }
@@ -55,6 +66,28 @@ class CreateLeadActivity : BaseActivity() {
         // Submit Button
         binding.buttonSubmitLead.setOnClickListener {
             submitLead()
+        }
+    }
+
+    private fun openSelect2ProductDialog() {
+        val sheet = com.zynexbd.crmsolution.dialogs.Select2ProductBottomSheet.newInstance(selectedProduct?.productServiceId) { product ->
+            setSelectedProduct(product)
+        }
+        sheet.show(supportFragmentManager, com.zynexbd.crmsolution.dialogs.Select2ProductBottomSheet.TAG)
+    }
+
+    private fun setSelectedProduct(product: CrmProductService?) {
+        selectedProduct = product
+        if (product != null) {
+            val priceStr = if (product.price != null && product.price > 0) " (৳ %,.2f)".format(product.price) else ""
+            val codeStr = if (!product.code.isNullOrBlank()) "[${product.code}] " else ""
+            binding.textSelectedProductService.text = "$codeStr${product.name}$priceStr"
+            binding.textSelectedProductService.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_primary))
+            binding.buttonClearSelectedProduct.visibility = View.VISIBLE
+        } else {
+            binding.textSelectedProductService.text = "Search & Select Product or Service..."
+            binding.textSelectedProductService.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_secondary))
+            binding.buttonClearSelectedProduct.visibility = View.GONE
         }
     }
 
@@ -88,8 +121,7 @@ class CreateLeadActivity : BaseActivity() {
         val remarks = binding.editRemarks.text.toString().trim().ifBlank { null }
         val leadStatus = binding.spinnerLeadStatus.selectedItem.toString()
 
-        val prodSel = binding.spinnerProductService.selectedItem as? CrmProductService
-        val productServiceId = if (prodSel != null && prodSel.productServiceId > 0) prodSel.productServiceId else null
+        val productServiceId = selectedProduct?.productServiceId?.takeIf { it > 0 }
 
         val sourceSel = binding.spinnerLeadSource.selectedItem as? CrmLeadSource
         val leadSourceId = if (sourceSel != null && sourceSel.leadSourceId > 0) sourceSel.leadSourceId else null
@@ -129,13 +161,6 @@ class CreateLeadActivity : BaseActivity() {
             if (!msg.isNullOrBlank()) {
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             }
-        }
-
-        viewModel.productServices.observe(this) { list ->
-            val items = mutableListOf(CrmProductService(0, 0, "-- Select Product/Service --"))
-            items.addAll(list)
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-            binding.spinnerProductService.adapter = adapter
         }
 
         viewModel.leadSources.observe(this) { list ->

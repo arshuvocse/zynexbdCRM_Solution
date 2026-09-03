@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.adapters
+package com.zynexbd.crmsolution.adapters
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -72,21 +72,22 @@ class SubscriptionPlanAdapter(
             if (!badge.isNullOrBlank()) {
                 badgeOffer.visibility = View.VISIBLE
                 badgeOffer.text = badge
+                badgeOffer.setTextColor(Color.WHITE)
                 when (plan.tierName.lowercase()) {
                     "silver" -> {
-                        badgeOffer.setBackgroundColor(Color.parseColor("#2563EB"))
+                        badgeOffer.setBackgroundResource(R.drawable.bg_badge_primary)
                         textTierName.setTextColor(Color.parseColor("#1D4ED8"))
                     }
                     "gold" -> {
-                        badgeOffer.setBackgroundColor(Color.parseColor("#D97706"))
+                        badgeOffer.setBackgroundResource(R.drawable.bg_badge_warning)
                         textTierName.setTextColor(Color.parseColor("#B45309"))
                     }
                     "platinum" -> {
-                        badgeOffer.setBackgroundColor(Color.parseColor("#7C3AED"))
+                        badgeOffer.setBackgroundResource(R.drawable.bg_badge_purple)
                         textTierName.setTextColor(Color.parseColor("#6D28D9"))
                     }
                     else -> {
-                        badgeOffer.setBackgroundColor(Color.parseColor("#059669"))
+                        badgeOffer.setBackgroundResource(R.drawable.bg_status_active_pill)
                         textTierName.setTextColor(Color.parseColor("#0F172A"))
                     }
                 }

@@ -10,6 +10,7 @@ public class Company
     public string? ContactEmail { get; set; }
     public int MaxUserLimit { get; set; } = 10;
     public DateTime? PaymentDueDate { get; set; }
+    public string? LogoUrl { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAtUtc { get; set; }

@@ -65,6 +65,7 @@ builder.Services.AddDbContext<LiveTrackingDbContext>(options =>
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ICrmService, CrmService>();
+builder.Services.AddScoped<LiveTracking.Api.Repositories.CRM.ICrmLeadRepository, LiveTracking.Api.Repositories.CRM.CrmLeadRepository>();
 builder.Services.AddHostedService<SubscriptionReminderHostedService>();
 builder.Services.AddHostedService<AttendanceShiftHostedService>();
 builder.Services.AddHostedService<CrmFollowUpReminderHostedService>();
@@ -119,11 +120,24 @@ builder.Services.AddCors(options =>
 // Ensure static files directory exists
 var contentRoot = builder.Environment.ContentRootPath;
 var webRoot = Path.Combine(contentRoot, "wwwroot");
-if (!Directory.Exists(webRoot)) Directory.CreateDirectory(webRoot);
-builder.Environment.WebRootPath = webRoot;
+var uploadsRoot = Path.Combine(contentRoot, "uploads");
 
-var uploadsDir = Path.Combine(webRoot, "uploads", "selfies");
-if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
+try
+{
+    if (!Directory.Exists(webRoot)) Directory.CreateDirectory(webRoot);
+    builder.Environment.WebRootPath = webRoot;
+
+    // Ensure external uploads directory exists outside wwwroot
+    if (!Directory.Exists(uploadsRoot)) Directory.CreateDirectory(uploadsRoot);
+    var selfiesDir = Path.Combine(uploadsRoot, "selfies");
+    if (!Directory.Exists(selfiesDir)) Directory.CreateDirectory(selfiesDir);
+    var companiesDir = Path.Combine(uploadsRoot, "companies");
+    if (!Directory.Exists(companiesDir)) Directory.CreateDirectory(companiesDir);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[Storage Warning] Error ensuring directories on startup: {ex.Message}");
+}
 
 var app = builder.Build();
 
@@ -144,6 +158,13 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = ""
 });
 
+// Serve uploads directly from external directory outside wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsRoot),
+    RequestPath = "/uploads"
+});
+
 // Direct streaming endpoint for uploads (Selfie images, proof attachments, etc.)
 app.MapGet("/uploads/{**filePath}", (string filePath, IWebHostEnvironment env) =>
 {
@@ -154,18 +175,18 @@ app.MapGet("/uploads/{**filePath}", (string filePath, IWebHostEnvironment env) =
 
     var candidates = new[]
     {
-        Path.Combine(env.ContentRootPath, "wwwroot", "uploads", cleanPath),
-        Path.Combine(env.ContentRootPath, "wwwroot", "uploads", "selfies", fileName),
         Path.Combine(env.ContentRootPath, "uploads", cleanPath),
         Path.Combine(env.ContentRootPath, "uploads", "selfies", fileName),
-        Path.Combine(AppContext.BaseDirectory, "wwwroot", "uploads", cleanPath),
-        Path.Combine(AppContext.BaseDirectory, "wwwroot", "uploads", "selfies", fileName),
         Path.Combine(AppContext.BaseDirectory, "uploads", cleanPath),
         Path.Combine(AppContext.BaseDirectory, "uploads", "selfies", fileName),
-        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", cleanPath),
-        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "selfies", fileName),
         Path.Combine(Directory.GetCurrentDirectory(), "uploads", cleanPath),
-        Path.Combine(Directory.GetCurrentDirectory(), "uploads", "selfies", fileName)
+        Path.Combine(Directory.GetCurrentDirectory(), "uploads", "selfies", fileName),
+        Path.Combine(env.ContentRootPath, "wwwroot", "uploads", cleanPath),
+        Path.Combine(env.ContentRootPath, "wwwroot", "uploads", "selfies", fileName),
+        Path.Combine(AppContext.BaseDirectory, "wwwroot", "uploads", cleanPath),
+        Path.Combine(AppContext.BaseDirectory, "wwwroot", "uploads", "selfies", fileName),
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", cleanPath),
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "selfies", fileName)
     };
 
     foreach (var path in candidates)

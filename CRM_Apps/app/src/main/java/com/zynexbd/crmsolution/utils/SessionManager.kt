@@ -25,6 +25,7 @@ class SessionManager(context: Context) {
         fullName: String,
         companyId: Int? = null,
         companyName: String? = null,
+        companyLogoUrl: String? = null,
         officeLocationId: Int? = null,
         officeLocationName: String? = null,
         authorizedOfficeLocations: List<AuthorizedOfficeDto>? = null
@@ -46,6 +47,12 @@ class SessionManager(context: Context) {
             editor.putString(KEY_COMPANY_NAME, companyName)
         } else {
             editor.remove(KEY_COMPANY_NAME)
+        }
+
+        if (!companyLogoUrl.isNullOrBlank()) {
+            editor.putString(KEY_COMPANY_LOGO_URL, companyLogoUrl)
+        } else {
+            editor.remove(KEY_COMPANY_LOGO_URL)
         }
 
         if (officeLocationId != null && officeLocationId > 0) {
@@ -76,6 +83,19 @@ class SessionManager(context: Context) {
     fun getFullName(): String? = prefs.getString(KEY_FULL_NAME, null)
     fun getCompanyId(): Int? = if (prefs.contains(KEY_COMPANY_ID)) prefs.getInt(KEY_COMPANY_ID, 0) else null
     fun getCompanyName(): String? = prefs.getString(KEY_COMPANY_NAME, null)
+    fun getCompanyLogoUrl(): String? = prefs.getString(KEY_COMPANY_LOGO_URL, null)
+
+    fun saveCompanyBranding(companyName: String?, companyLogoUrl: String?) {
+        val editor = prefs.edit()
+        if (!companyName.isNullOrBlank()) {
+            editor.putString(KEY_COMPANY_NAME, companyName)
+        }
+        if (!companyLogoUrl.isNullOrBlank()) {
+            editor.putString(KEY_COMPANY_LOGO_URL, companyLogoUrl)
+        }
+        editor.apply()
+    }
+
     fun getOfficeLocationId(): Int? = if (prefs.contains(KEY_OFFICE_LOCATION_ID)) prefs.getInt(KEY_OFFICE_LOCATION_ID, 0) else null
     fun getOfficeLocationName(): String? = prefs.getString(KEY_OFFICE_LOCATION_NAME, null)
 
@@ -115,9 +135,9 @@ class SessionManager(context: Context) {
     fun getServerBaseUrl(): String {
         val custom = prefs.getString(KEY_CUSTOM_SERVER_URL, null)
         if (!custom.isNullOrBlank()) {
-            return if (custom.endsWith("/")) custom else "$custom/"
+            return com.zynexbd.crmsolution.network.ApiClient.sanitizeBaseUrl(custom)
         }
-        return com.zynexbd.crmsolution.BuildConfig.API_BASE_URL
+        return com.zynexbd.crmsolution.network.ApiClient.sanitizeBaseUrl(com.zynexbd.crmsolution.BuildConfig.API_BASE_URL)
     }
 
     fun setServerBaseUrl(url: String?) {
@@ -125,9 +145,8 @@ class SessionManager(context: Context) {
         if (url.isNullOrBlank()) {
             editor.remove(KEY_CUSTOM_SERVER_URL)
         } else {
-            val clean = url.trim()
-            val formatted = if (clean.endsWith("/")) clean else "$clean/"
-            editor.putString(KEY_CUSTOM_SERVER_URL, formatted)
+            val sanitized = com.zynexbd.crmsolution.network.ApiClient.sanitizeBaseUrl(url)
+            editor.putString(KEY_CUSTOM_SERVER_URL, sanitized)
         }
         editor.apply()
     }
@@ -141,6 +160,7 @@ class SessionManager(context: Context) {
         private const val KEY_FULL_NAME = "full_name"
         private const val KEY_COMPANY_ID = "company_id"
         private const val KEY_COMPANY_NAME = "company_name"
+        private const val KEY_COMPANY_LOGO_URL = "company_logo_url"
         private const val KEY_OFFICE_LOCATION_ID = "office_location_id"
         private const val KEY_OFFICE_LOCATION_NAME = "office_location_name"
         private const val KEY_AUTHORIZED_OFFICES = "authorized_office_locations"

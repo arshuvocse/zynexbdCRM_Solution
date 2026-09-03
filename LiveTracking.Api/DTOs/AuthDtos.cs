@@ -13,6 +13,7 @@ public record LoginResponse(
     string Role,
     int? CompanyId = null,
     string? CompanyName = null,
+    string? CompanyLogoUrl = null,
     int? OfficeLocationId = null,
     string? OfficeLocationName = null,
     List<AuthorizedOfficeDto>? AuthorizedOfficeLocations = null

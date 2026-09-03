@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.activities
+package com.zynexbd.crmsolution.activities
 
 import android.app.Dialog
 import android.content.Intent
@@ -150,13 +150,35 @@ class UserCrmLeadListActivity : BaseActivity() {
             if (idx >= 0) dBinding.spinnerFilterStatus.setSelection(idx)
         }
 
-        val products = mutableListOf(CrmProductService(0, 0, "All Products/Services"))
-        products.addAll(viewModel.productServices.value ?: emptyList())
-        val productAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, products)
-        dBinding.spinnerFilterProduct.adapter = productAdapter
+        // Product Select2 Searchable Picker
+        var tempSelectedProduct: CrmProductService? = null
         if (selectedProductServiceId != null) {
-            val idx = products.indexOfFirst { it.productServiceId == selectedProductServiceId }
-            if (idx >= 0) dBinding.spinnerFilterProduct.setSelection(idx)
+            val existing = viewModel.productServices.value?.find { it.productServiceId == selectedProductServiceId }
+            if (existing != null) {
+                tempSelectedProduct = existing
+                dBinding.textFilterProduct.text = existing.name
+                dBinding.buttonClearFilterProduct.visibility = View.VISIBLE
+            }
+        }
+
+        dBinding.layoutFilterProduct.setOnClickListener {
+            val sheet = com.zynexbd.crmsolution.dialogs.Select2ProductBottomSheet.newInstance(tempSelectedProduct?.productServiceId) { product ->
+                tempSelectedProduct = product
+                if (product != null) {
+                    dBinding.textFilterProduct.text = product.name
+                    dBinding.buttonClearFilterProduct.visibility = View.VISIBLE
+                } else {
+                    dBinding.textFilterProduct.text = "All Products/Services"
+                    dBinding.buttonClearFilterProduct.visibility = View.GONE
+                }
+            }
+            sheet.show(supportFragmentManager, com.zynexbd.crmsolution.dialogs.Select2ProductBottomSheet.TAG)
+        }
+
+        dBinding.buttonClearFilterProduct.setOnClickListener {
+            tempSelectedProduct = null
+            dBinding.textFilterProduct.text = "All Products/Services"
+            dBinding.buttonClearFilterProduct.visibility = View.GONE
         }
 
         val sources = mutableListOf(CrmLeadSource(0, 0, "All Lead Sources"))
@@ -180,8 +202,7 @@ class UserCrmLeadListActivity : BaseActivity() {
             val statusSel = dBinding.spinnerFilterStatus.selectedItem.toString()
             selectedStatus = if (statusSel == "All Statuses") null else statusSel
 
-            val prodSel = dBinding.spinnerFilterProduct.selectedItem as? CrmProductService
-            selectedProductServiceId = if (prodSel != null && prodSel.productServiceId > 0) prodSel.productServiceId else null
+            selectedProductServiceId = tempSelectedProduct?.productServiceId?.takeIf { it > 0 }
 
             val sourceSel = dBinding.spinnerFilterSource.selectedItem as? CrmLeadSource
             selectedLeadSourceId = if (sourceSel != null && sourceSel.leadSourceId > 0) sourceSel.leadSourceId else null

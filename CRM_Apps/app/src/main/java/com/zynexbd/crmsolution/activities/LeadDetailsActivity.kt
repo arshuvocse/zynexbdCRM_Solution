@@ -268,42 +268,53 @@ class LeadDetailsActivity : BaseActivity() {
 
         dBinding.buttonCancel.setOnClickListener { dialog.dismiss() }
 
-        var currentEmployees = viewModel.employees.value ?: emptyList()
-        if (currentEmployees.isEmpty()) {
+        var selectedEmployee: com.zynexbd.crmsolution.models.User? = null
+
+        // Pre-populate if lead is already assigned
+        val currentLead = viewModel.leadDetails.value
+        if (currentLead?.assignedUserId != null) {
+            val pre = viewModel.employees.value?.firstOrNull { it.id == currentLead.assignedUserId }
+            if (pre != null) {
+                selectedEmployee = pre
+                dBinding.textSelectedEmployee.text = "${pre.name.ifBlank { pre.username }} (${pre.role})"
+                dBinding.textSelectedEmployee.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_primary))
+            }
+        }
+
+        if (viewModel.employees.value.isNullOrEmpty()) {
             viewModel.loadEmployees()
         }
 
-        fun updateEmployeeSpinner(list: List<com.zynexbd.crmsolution.models.User>) {
-            currentEmployees = list
-            val empNames = if (list.isEmpty()) {
-                listOf("Loading employees...")
-            } else {
-                list.map { "${it.name.ifBlank { it.username }} (${it.role})" }
+        // Select2 Searchable Picker Trigger
+        dBinding.layoutSelectEmployee.setOnClickListener {
+            val sheet = com.zynexbd.crmsolution.dialogs.Select2EmployeeBottomSheet.newInstance(
+                selectedUserId = selectedEmployee?.id,
+                preloadedEmployees = viewModel.employees.value
+            ) { emp ->
+                selectedEmployee = emp
+                if (emp != null) {
+                    dBinding.textSelectedEmployee.text = "${emp.name.ifBlank { emp.username }} (${emp.role})"
+                    dBinding.textSelectedEmployee.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_primary))
+                } else {
+                    dBinding.textSelectedEmployee.text = "Choose an employee..."
+                    dBinding.textSelectedEmployee.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_muted))
+                }
             }
-            val empAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, empNames)
-            dBinding.spinnerAssignEmployee.adapter = empAdapter
-        }
-
-        updateEmployeeSpinner(currentEmployees)
-
-        viewModel.employees.observe(this) { updatedList ->
-            if (dialog.isShowing) {
-                updateEmployeeSpinner(updatedList)
-            }
+            sheet.show(supportFragmentManager, com.zynexbd.crmsolution.dialogs.Select2EmployeeBottomSheet.TAG)
         }
 
         dBinding.buttonSubmit.setOnClickListener {
-            if (currentEmployees.isEmpty() || dBinding.spinnerAssignEmployee.selectedItemPosition < 0 || dBinding.spinnerAssignEmployee.selectedItemPosition >= currentEmployees.size) {
+            val emp = selectedEmployee
+            if (emp == null) {
                 Toast.makeText(this, "Please select an employee", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val selectedEmp = currentEmployees[dBinding.spinnerAssignEmployee.selectedItemPosition]
             val remarks = dBinding.editAssignRemarks.text.toString().trim().ifBlank { null }
 
-            viewModel.assignLead(leadId, selectedEmp.id, remarks) { success ->
+            viewModel.assignLead(leadId, emp.id, remarks) { success ->
                 if (success) {
-                    Toast.makeText(this, "Assigned to ${selectedEmp.name.ifBlank { selectedEmp.username }}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Assigned to ${emp.name.ifBlank { emp.username }}", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
             }

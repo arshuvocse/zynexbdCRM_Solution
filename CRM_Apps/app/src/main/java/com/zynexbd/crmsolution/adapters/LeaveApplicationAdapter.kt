@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.adapters
+package com.zynexbd.crmsolution.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.zynexbd.crmsolution.R
 import com.zynexbd.crmsolution.databinding.ItemLeaveApplicationBinding
 import com.zynexbd.crmsolution.models.LeaveApplicationResponse
 
@@ -37,6 +38,20 @@ class LeaveApplicationAdapter(
         with(holder.binding) {
             textLeaveType.text = item.leaveTypeName
             textStatus.text = item.status
+            when (item.status?.lowercase()) {
+                "approved" -> {
+                    textStatus.setBackgroundResource(R.drawable.bg_status_active_pill)
+                    textStatus.setTextColor(android.graphics.Color.WHITE)
+                }
+                "rejected" -> {
+                    textStatus.setBackgroundResource(R.drawable.bg_status_inactive_pill)
+                    textStatus.setTextColor(android.graphics.Color.WHITE)
+                }
+                else -> {
+                    textStatus.setBackgroundResource(R.drawable.bg_badge_warning)
+                    textStatus.setTextColor(android.graphics.Color.WHITE)
+                }
+            }
             textDates.text = "${item.startDate} to ${item.endDate} (${item.totalDays} days)"
             textReason.text = item.reason
 

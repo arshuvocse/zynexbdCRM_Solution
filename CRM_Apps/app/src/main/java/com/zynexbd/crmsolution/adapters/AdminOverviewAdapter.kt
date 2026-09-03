@@ -49,7 +49,13 @@ class AdminOverviewAdapter(
             textFullName.text = displayName
             textUsername.text = "@${user.username}"
             textAvatarInitials.text = displayName.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
-            textRole.text = user.role
+            textRole.text = user.role.uppercase()
+            textRole.setTextColor(android.graphics.Color.WHITE)
+            when (user.role.lowercase()) {
+                "admin" -> textRole.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_role_admin_pill)
+                "manager" -> textRole.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_badge_primary)
+                else -> textRole.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_role_user_pill)
+            }
             textCoordinates.text = "Phone: ${user.phoneNumber ?: "N/A"}"
             textDateTime.text = if (user.isActive) "Active Account" else "Disabled"
 

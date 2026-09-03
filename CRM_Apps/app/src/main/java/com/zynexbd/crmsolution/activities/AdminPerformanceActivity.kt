@@ -1,4 +1,4 @@
-﻿package com.zynexbd.crmsolution.activities
+package com.zynexbd.crmsolution.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -460,7 +460,13 @@ class AdminPerformanceActivity : BaseActivity() {
             // 1. Employee Info
             b.textEmployeeName.text = item.fullName.ifBlank { item.username }
             b.textUsername.text = "@${item.username}"
-            b.textRoleBadge.text = item.role
+            b.textRoleBadge.text = item.role.uppercase()
+            b.textRoleBadge.setTextColor(android.graphics.Color.WHITE)
+            when (item.role.lowercase()) {
+                "admin" -> b.textRoleBadge.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_role_admin_pill)
+                "manager" -> b.textRoleBadge.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_badge_primary)
+                else -> b.textRoleBadge.setBackgroundResource(com.zynexbd.crmsolution.R.drawable.bg_role_user_pill)
+            }
             b.textStatusBadge.text = if (item.isActive) "● Active" else "● Disabled"
             b.textStatusBadge.setTextColor(
                 if (item.isActive) android.graphics.Color.parseColor("#059669")

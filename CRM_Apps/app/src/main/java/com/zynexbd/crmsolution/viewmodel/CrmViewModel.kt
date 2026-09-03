@@ -675,4 +675,143 @@ class CrmViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    // =========================================================================
+    // DYNAMIC BRANDING & PRODUCT/SERVICE SELECT2 MANAGEMENT
+    // =========================================================================
+    val companyBranding = MutableLiveData<CompanyBranding?>()
+    val productServicesManagement = MutableLiveData<List<CrmProductService>>(emptyList())
+
+    fun loadCompanyBranding(onComplete: ((CompanyBranding?) -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                val res = repository.getCompanyBranding()
+                if (res.isSuccessful && res.body()?.success == true) {
+                    val branding = res.body()?.data
+                    companyBranding.value = branding
+                    onComplete?.invoke(branding)
+                } else {
+                    onComplete?.invoke(null)
+                }
+            } catch (e: Exception) {
+                onComplete?.invoke(null)
+            }
+        }
+    }
+
+    fun loadProductServicesManagement(search: String? = null, activeOnly: Boolean? = null) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.getProductServices(search = search, activeOnly = activeOnly)
+                if (res.isSuccessful && res.body()?.success == true) {
+                    val items = res.body()?.data?.items ?: emptyList()
+                    productServicesManagement.value = items
+                } else {
+                    errorMessage.value = res.body()?.message ?: "Failed to load products (${res.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage ?: "Network error"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun createProductService(request: CreateCrmProductServiceRequest, onComplete: (Boolean, String?) -> Unit) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.createProductService(request)
+                if (res.isSuccessful && res.body()?.success == true) {
+                    successMessage.value = "Product/Service created successfully"
+                    loadProductServicesManagement()
+                    onComplete(true, null)
+                } else {
+                    val msg = res.body()?.message ?: "Failed to create product (${res.code()})"
+                    errorMessage.value = msg
+                    onComplete(false, msg)
+                }
+            } catch (e: Exception) {
+                val msg = e.localizedMessage ?: "Network error"
+                errorMessage.value = msg
+                onComplete(false, msg)
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun updateProductService(id: Int, request: UpdateCrmProductServiceRequest, onComplete: (Boolean, String?) -> Unit) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.updateProductService(id, request)
+                if (res.isSuccessful && res.body()?.success == true) {
+                    successMessage.value = "Product/Service updated successfully"
+                    loadProductServicesManagement()
+                    onComplete(true, null)
+                } else {
+                    val msg = res.body()?.message ?: "Failed to update product (${res.code()})"
+                    errorMessage.value = msg
+                    onComplete(false, msg)
+                }
+            } catch (e: Exception) {
+                val msg = e.localizedMessage ?: "Network error"
+                errorMessage.value = msg
+                onComplete(false, msg)
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun toggleProductServiceStatus(id: Int, isActive: Boolean, onComplete: (Boolean, String?) -> Unit) {
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val res = repository.toggleProductServiceStatus(id, isActive)
+                if (res.isSuccessful && res.body()?.success == true) {
+                    val actText = if (isActive) "activated" else "deactivated"
+                    successMessage.value = "Product/Service $actText successfully"
+                    loadProductServicesManagement()
+                    onComplete(true, null)
+                } else {
+                    val msg = res.body()?.message ?: "Failed to update status (${res.code()})"
+                    errorMessage.value = msg
+                    onComplete(false, msg)
+                }
+            } catch (e: Exception) {
+                val msg = e.localizedMessage ?: "Network error"
+                errorMessage.value = msg
+                onComplete(false, msg)
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    // =========================================================================
+    // REAL-TIME LIVE TEAM ACTIVITY FEED
+    // =========================================================================
+    val liveTeamActivities = MutableLiveData<List<com.zynexbd.crmsolution.models.LiveTeamActivity>>()
+
+    fun loadLiveTeamActivities(
+        fromDate: String? = null,
+        toDate: String? = null,
+        actionType: String? = null,
+        userId: Int? = null,
+        limit: Int = 100
+    ) {
+        viewModelScope.launch {
+            try {
+                val res = repository.getLiveTeamActivities(fromDate, toDate, actionType, userId, limit)
+                if (res.isSuccessful && res.body() != null) {
+                    liveTeamActivities.value = res.body()
+                }
+            } catch (e: Exception) {
+                // Non-blocking
+            }
+        }
+    }
 }
